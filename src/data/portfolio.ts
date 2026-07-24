@@ -29,19 +29,19 @@ export const site = {
     'Open to internships, open-source collaboration, hackathons, and opportunities to learn with strong engineering teams.',
   location: 'India',
   /** Canonical URL of the deployed site. Replace GITHUB_USERNAME. */
-  url: 'https://GITHUB_USERNAME.github.io/',
+  url: 'https://github.com/ThunderKhan/',
   /** Path to the résumé PDF. Place the file at public/Ayan_Khan_Resume.pdf */
   resume: '/Ayan_Khan_Resume.pdf',
 }
 
 export const links = {
   /** Replace with your professional email address. */
-  email: 'YOUR_EMAIL',
+  email: 'AyanKhanOffiiciall@gmail.com',
   linkedin: 'https://www.linkedin.com/in/the-ayan-khan/',
   /** Replace with your GitHub profile URL. */
-  github: 'YOUR_GITHUB_URL',
+  github: 'https://github.com/ThunderKhan/',
   /** Replace with your LeetCode profile URL. */
-  leetcode: 'YOUR_LEETCODE_URL',
+  leetcode: 'https://leetcode.com/u/ThunderKhan/',
 }
 
 export const about = {
