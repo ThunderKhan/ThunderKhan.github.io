@@ -15,7 +15,7 @@ concurrency:
   group: github-pages
   cancel-in-progress: true
 
-jobs:
+jobs:cd .. //../..
   build:
     runs-on: ubuntu-latest
 
