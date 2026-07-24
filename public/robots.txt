@@ -1,5 +1,4 @@
-# Replace GITHUB_USERNAME with your GitHub username
 User-agent: *
 Allow: /
 
-Sitemap: https://GITHUB_USERNAME.github.io/sitemap.xml
+Sitemap: https://ThunderKhan.github.io/sitemap.xml
