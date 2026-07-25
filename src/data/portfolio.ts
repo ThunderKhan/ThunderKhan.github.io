@@ -234,7 +234,7 @@ export const education: Education[] = [
     degree: 'Bachelor of Computer Applications',
     specialization: 'Machine Learning and Data Science',
     institution: 'Deen Dayal Upadhyaya Gorakhpur University',
-    period: '2024 — 2028 (expected)',
+    period: '2025 — 2028 (expected)',
     status: 'Currently in second year',
     coursework: [],
     certifications: [],
