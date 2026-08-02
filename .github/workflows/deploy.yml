@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Refresh the GitHub contribution graph data once per day.
+    - cron: '17 2 * * *'
 
 permissions:
   contents: read
@@ -34,6 +37,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate GitHub contribution data
+        run: node scripts/fetch-github-contributions.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build website
         run: npm run build

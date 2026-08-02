@@ -7,8 +7,13 @@ import { Skills } from './components/Skills'
 import { Education } from './components/Education'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
+import { AmbientBackground } from './components/AmbientBackground'
+import { FloatingDock } from './components/FloatingDock'
+import { useBackgroundMode } from './hooks/useBackgroundMode'
 
 export default function App() {
+  const { mode, selectMode } = useBackgroundMode()
+
   return (
     <>
       <a
@@ -17,7 +22,8 @@ export default function App() {
       >
         Skip to main content
       </a>
-      <Navigation />
+      <AmbientBackground mode={mode} />
+      <Navigation backgroundMode={mode} onSelectBackground={selectMode} />
       <main id="main">
         <Hero />
         <About />
@@ -28,6 +34,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <FloatingDock />
     </>
   )
 }

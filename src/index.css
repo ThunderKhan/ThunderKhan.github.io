@@ -3,34 +3,48 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Newsreader', ui-serif, Georgia, serif;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Light theme (default) — neutral off-white with a muted blue accent */
-  --color-background: oklch(0.985 0.002 90);
-  --color-foreground: oklch(0.235 0.01 260);
-  --color-muted: oklch(0.955 0.003 90);
-  --color-muted-foreground: oklch(0.5 0.012 260);
-  --color-border: oklch(0.9 0.005 90);
-  --color-accent: oklch(0.52 0.1 240);
-  --color-accent-foreground: oklch(0.985 0.002 90);
-  --color-card: oklch(1 0 0);
+  /* Small interactions (hover, focus, colour shifts) share one restrained
+     duration; cards override to 300ms, section reveals live in Motion. */
+  --default-transition-duration: 200ms;
+
+  /* Light theme (default) — warm lavender off-white, deep violet accent */
+  --color-background: #f7f5fa;
+  --color-foreground: #1a1625;
+  --color-card: #ffffff;
+  --color-muted: #edeaf3;
+  --color-muted-foreground: #5c556b;
+  /* Stronger than the dark-theme hairline: white cards on a near-white
+     background need a visible edge to read as cards. */
+  --color-border: rgba(26, 22, 37, 0.16);
+  --color-accent: #6d28d9;
+  --color-accent-foreground: #f7f5fa;
+  /* Darkened from #e0526d so coral text/links clear 4.5:1 on light cards. */
+  --color-coral: #c5344f;
+  /* Third ambient/decorative hue, used only in the aurora background layer
+     and the orbit motif. Never used for text, so contrast is not a concern. */
+  --color-amber: #b45309;
 }
 
 .dark {
-  --color-background: oklch(0.185 0.008 260);
-  --color-foreground: oklch(0.92 0.005 90);
-  --color-muted: oklch(0.23 0.01 260);
-  --color-muted-foreground: oklch(0.68 0.01 260);
-  --color-border: oklch(0.3 0.01 260);
-  --color-accent: oklch(0.72 0.09 235);
-  --color-accent-foreground: oklch(0.185 0.008 260);
-  --color-card: oklch(0.215 0.01 260);
+  --color-background: #07070b;
+  --color-foreground: #f4f1ff;
+  --color-card: #0e0e16;
+  --color-muted: #16121f;
+  --color-muted-foreground: #a9a3b8;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #a78bfa;
+  --color-accent-foreground: #07070b;
+  --color-coral: #fb7185;
+  --color-amber: #fbbf24;
 }
 
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+  background-color: var(--color-background);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -51,6 +65,7 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -62,3 +77,235 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/* ---------------------------------------------------------------
+   Ambient background — Aurora mode
+   Slow drifting light rays built from radial gradients.
+   Animates transform/opacity only; fully static under reduced motion.
+---------------------------------------------------------------- */
+@keyframes aurora-drift-a {
+  0%,
+  100% {
+    transform: translate3d(-4%, -2%, 0) rotate(-6deg) scale(1);
+  }
+  50% {
+    transform: translate3d(5%, 4%, 0) rotate(4deg) scale(1.08);
+  }
+}
+
+@keyframes aurora-drift-b {
+  0%,
+  100% {
+    transform: translate3d(3%, 2%, 0) rotate(5deg) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-5%, -4%, 0) rotate(-3deg) scale(1);
+  }
+}
+
+@keyframes aurora-drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 3%, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(-2%, -3%, 0) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.aurora-layer-a {
+  animation: aurora-drift-a 26s ease-in-out infinite;
+}
+.aurora-layer-b {
+  animation: aurora-drift-b 30s ease-in-out infinite;
+}
+.aurora-layer-c {
+  animation: aurora-drift-c 22s ease-in-out infinite;
+}
+
+/* Blueprint mode — drifting particles */
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate3d(6px, -14px, 0);
+    opacity: 0.7;
+  }
+}
+
+.blueprint-particle {
+  animation: particle-float 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-layer-a,
+  .aurora-layer-b,
+  .aurora-layer-c,
+  .blueprint-particle {
+    animation: none !important;
+  }
+}
+
+/* Blueprint engineering grid */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Quiet mode — subtle noise texture via repeating gradients */
+.quiet-noise {
+  background-image: repeating-radial-gradient(
+    circle at 17% 32%,
+    rgba(255, 255, 255, 0.012) 0,
+    transparent 2px,
+    rgba(255, 255, 255, 0.008) 4px,
+    transparent 6px
+  );
+}
+
+/* ---------------------------------------------------------------
+   Tech marquee — CSS-driven, pauses on hover/keyboard focus,
+   degrades into a static wrapped list under reduced motion
+   and on small screens.
+---------------------------------------------------------------- */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 30s linear infinite;
+}
+
+.marquee-container:hover .marquee-track,
+.marquee-container:focus-visible .marquee-track,
+.marquee-container:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Soft fade at both edges of the marquee viewport. */
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Static wrapped fallback: reduced motion, or crowded small screens. */
+@media (prefers-reduced-motion: reduce), (max-width: 40rem) {
+  .marquee-track {
+    animation: none !important;
+    width: 100% !important;
+    flex-wrap: wrap;
+  }
+  .marquee-list {
+    flex-wrap: wrap;
+    width: 100%;
+    flex-shrink: 1;
+    padding-right: 0;
+  }
+  .marquee-dupe {
+    display: none !important;
+  }
+  .marquee-mask {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Status pulse light
+---------------------------------------------------------------- */
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.status-pulse {
+  animation: status-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-pulse {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Social keys — dimensional keyboard-key styling.
+   3D lift handled with transforms + layered shadows.
+---------------------------------------------------------------- */
+.social-key {
+  transform: perspective(600px) rotateX(8deg) translateY(0);
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    color 220ms ease;
+  box-shadow:
+    0 4px 0 0 var(--key-edge, rgba(0, 0, 0, 0.35)),
+    0 8px 18px -6px rgba(0, 0, 0, 0.4);
+}
+
+.social-key:hover {
+  transform: perspective(600px) rotateX(3deg) translateY(-4px);
+  box-shadow:
+    0 8px 0 0 var(--key-edge, rgba(0, 0, 0, 0.35)),
+    0 16px 28px -8px rgba(0, 0, 0, 0.45);
+}
+
+.social-key:active {
+  transform: perspective(600px) rotateX(10deg) translateY(2px);
+  box-shadow:
+    0 1px 0 0 var(--key-edge, rgba(0, 0, 0, 0.35)),
+    0 4px 10px -4px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-key,
+  .social-key:hover,
+  .social-key:active {
+    transform: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Project cards — soft accent border glow on hover.
+---------------------------------------------------------------- */
+.project-card:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-accent) 20%, transparent),
+    0 12px 40px -18px color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+
+/* Bento card internal lighting */
+.bento-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    600px circle at var(--glow-x, 50%) var(--glow-y, 0%),
+    color-mix(in oklab, var(--color-accent) 8%, transparent),
+    transparent 45%
+  );
+  pointer-events: none;
+}
+

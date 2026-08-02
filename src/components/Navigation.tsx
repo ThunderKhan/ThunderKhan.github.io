@@ -1,118 +1,79 @@
-import { useState } from 'react'
-import { FileText, Menu, Moon, Sun, X } from 'lucide-react'
-import { navigation, site } from '../data/portfolio'
+import { useEffect, useState } from 'react'
+import { FileText, Moon, Sun } from 'lucide-react'
+import { site } from '../data/portfolio'
 import { useTheme } from '../hooks/useTheme'
-import { useActiveSection } from '../hooks/useActiveSection'
+import type { BackgroundMode } from '../hooks/useBackgroundMode'
+import { BackgroundSelector } from './BackgroundSelector'
 
-const sectionIds = navigation.map((item) => item.href.slice(1))
+type NavigationProps = {
+  backgroundMode: BackgroundMode
+  onSelectBackground: (mode: BackgroundMode) => void
+}
 
-export function Navigation() {
+/**
+ * Minimal transparent top utility bar: monogram, résumé, theme toggle,
+ * and ambient-background selector. Gains a blurred surface after scroll.
+ * Section navigation lives in the FloatingDock.
+ */
+export function Navigation({ backgroundMode, onSelectBackground }: NavigationProps) {
   const { theme, toggleTheme } = useTheme()
-  const active = useActiveSection(sectionIds)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
-      <nav aria-label="Main navigation" className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between px-6">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        scrolled
+          ? 'border-b border-border bg-background/70 backdrop-blur-md'
+          : 'border-b border-transparent bg-transparent'
+      }`}
+    >
+      <nav
+        aria-label="Utility"
+        className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6"
+      >
         <a
-          href="#top"
-          className="font-serif text-lg font-medium text-foreground transition-colors hover:text-accent"
+          href="#hero"
+          className="font-mono text-sm font-medium tracking-widest text-foreground transition-colors hover:text-accent"
+          aria-label={`${site.name} — back to top`}
         >
-          {site.name}
+          {site.initials}
         </a>
 
-        {/* Desktop navigation */}
-        <div className="hidden items-center gap-6 md:flex">
-          <ul className="flex items-center gap-5">
-            {navigation.map((item) => {
-              const isActive = active === item.href.slice(1)
-              return (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    aria-current={isActive ? 'true' : undefined}
-                    className={`text-sm transition-colors hover:text-foreground ${
-                      isActive ? 'text-accent' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
+        <div className="flex items-center gap-2 sm:gap-3">
           <a
             href={site.resume}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="flex h-9 items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 text-xs font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
           >
-            <FileText size={14} aria-hidden="true" />
-            Résumé
+            <FileText size={13} aria-hidden="true" />
+            <span className="hidden sm:inline">Résumé</span>
+            <span className="sr-only sm:hidden">Résumé</span>
           </a>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-          </button>
-        </div>
 
-        {/* Mobile controls */}
-        <div className="flex items-center gap-1 md:hidden">
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:text-foreground"
           >
-            {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+            {theme === 'dark' ? (
+              <Sun size={15} aria-hidden="true" />
+            ) : (
+              <Moon size={15} aria-hidden="true" />
+            )}
           </button>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {menuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-          </button>
+
+          <BackgroundSelector mode={backgroundMode} onSelect={onSelectBackground} />
         </div>
       </nav>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div id="mobile-menu" className="border-t border-border bg-background md:hidden">
-          <ul className="flex flex-col px-6 py-4">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="block py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li>
-              <a
-                href={site.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-1.5 py-2.5 text-sm text-accent"
-              >
-                <FileText size={14} aria-hidden="true" />
-                Résumé
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
     </header>
   )
 }
