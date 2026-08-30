@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpRight, Clock3, Github } from 'lucide-react'
 import { useEffect } from 'react'
 import type { BlogBlock, BlogPost } from '../data/blogs'
+import { applySeo } from '../lib/seo'
 
 function renderBlock(block: BlogBlock, index: number) {
   switch (block.type) {
@@ -50,75 +51,22 @@ function renderBlock(block: BlogBlock, index: number) {
   }
 }
 
-function setMeta(selector: string, attribute: 'name' | 'property', key: string, content: string) {
-  let element = document.querySelector<HTMLMetaElement>(selector)
-  const created = !element
-  const previousContent = element?.content
-
-  if (!element) {
-    element = document.createElement('meta')
-    element.setAttribute(attribute, key)
-    document.head.appendChild(element)
-  }
-
-  element.content = content
-
-  return () => {
-    if (created) {
-      element?.remove()
-    } else if (element && previousContent !== undefined) {
-      element.content = previousContent
-    }
-  }
-}
-
-function setCanonical(href: string) {
-  let element = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-  const created = !element
-  const previousHref = element?.href
-
-  if (!element) {
-    element = document.createElement('link')
-    element.rel = 'canonical'
-    document.head.appendChild(element)
-  }
-
-  element.href = href
-
-  return () => {
-    if (created) {
-      element?.remove()
-    } else if (element && previousHref !== undefined) {
-      element.href = previousHref
-    }
-  }
-}
-
 export function BlogPostPage({ post }: { post: BlogPost }) {
   useEffect(() => {
-    const previousTitle = document.title
     const articleUrl = `https://ayankhan.me/blog/${encodeURIComponent(post.slug)}`
     const canonicalUrl = post.canonicalUrl ?? articleUrl
     const coverUrl = post.cover ?? 'https://ayankhan.me/og-image.png?v=3'
-    const restore = [
-      setMeta('meta[name="description"]', 'name', 'description', post.description),
-      setMeta('meta[property="og:type"]', 'property', 'og:type', 'article'),
-      setMeta('meta[property="og:title"]', 'property', 'og:title', post.title),
-      setMeta('meta[property="og:description"]', 'property', 'og:description', post.description),
-      setMeta('meta[property="og:url"]', 'property', 'og:url', articleUrl),
-      setMeta('meta[property="og:image"]', 'property', 'og:image', coverUrl),
-      setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', post.title),
-      setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', post.description),
-      setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', coverUrl),
-      setCanonical(canonicalUrl),
-    ]
 
-    document.title = `${post.title} — Ayan Khan`
-
-    return () => {
-      document.title = previousTitle
-      restore.reverse().forEach((restoreValue) => restoreValue())
-    }
+    return applySeo({
+      title: `${post.title} — Ayan Khan`,
+      description: post.description,
+      canonicalUrl,
+      ogType: 'article',
+      ogTitle: post.title,
+      ogUrl: articleUrl,
+      ogImage: coverUrl,
+      twitterTitle: post.title,
+    })
   }, [post])
 
   const hasRelatedLinks = Boolean(post.repositoryUrl || post.crossPosts?.length)
