@@ -16,6 +16,15 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
 }
 
+function escapeXml(value) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
+
 function replaceTitle(html, title) {
   return html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
 }
@@ -143,6 +152,31 @@ function renderBlogPost(template, post) {
   return html
 }
 
+function renderSitemap(posts) {
+  const latestPostDate = posts.reduce(
+    (latest, post) => (post.date > latest ? post.date : latest),
+    '',
+  )
+  const entries = [
+    { loc: `${SITE_URL}/` },
+    { loc: `${SITE_URL}/blog`, lastmod: latestPostDate || undefined },
+    ...posts.map((post) => ({
+      loc: `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`,
+      lastmod: post.date,
+    })),
+  ]
+
+  const urls = entries
+    .map(({ loc, lastmod }) => {
+      const lines = [`    <loc>${escapeXml(loc)}</loc>`]
+      if (lastmod) lines.push(`    <lastmod>${escapeXml(lastmod)}</lastmod>`)
+      return `  <url>\n${lines.join('\n')}\n  </url>`
+    })
+    .join('\n')
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
+}
+
 async function writeRoute(route, html) {
   const relativePath = route.replace(/^\//, '')
   const directory = path.join(DIST_DIR, relativePath)
@@ -165,7 +199,11 @@ async function main() {
     await writeRoute(`/blog/${post.slug}`, renderBlogPost(template, post))
   }
 
-  console.log(`Prerendered /blog and ${posts.length} blog post route${posts.length === 1 ? '' : 's'}.`)
+  await fs.writeFile(path.join(DIST_DIR, 'sitemap.xml'), renderSitemap(posts))
+
+  console.log(
+    `Prerendered /blog and ${posts.length} blog post route${posts.length === 1 ? '' : 's'}; generated sitemap.xml.`,
+  )
 }
 
 main().catch((error) => {
