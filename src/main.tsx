@@ -9,7 +9,16 @@ import '@fontsource/manrope/800.css'
 import App from './App'
 import './index.css'
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!
+
+// Blog route HTML can contain a build-time static article fallback for crawlers
+// and no-JS readers. The interactive React app replaces that fallback on load.
+if (rootElement.dataset.prerendered === 'true') {
+  rootElement.replaceChildren()
+  delete rootElement.dataset.prerendered
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
