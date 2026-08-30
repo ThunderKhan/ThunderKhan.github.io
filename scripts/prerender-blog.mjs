@@ -91,7 +91,7 @@ async function readBlogMetadata() {
       description: getProperty(post, 'description'),
       date: getProperty(post, 'date'),
       cover: getProperty(post, 'cover'),
-      canonical: getProperty(post, 'canonical'),
+      canonicalUrl: getProperty(post, 'canonicalUrl'),
     }))
     .map((post, index) => {
       if (!post.slug || !post.title || !post.description || !post.date) {
@@ -123,7 +123,7 @@ function renderBlogIndex(template) {
 
 function renderBlogPost(template, post) {
   const articleUrl = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`
-  const canonicalUrl = post.canonical ?? articleUrl
+  const canonicalUrl = post.canonicalUrl ?? articleUrl
   const image = post.cover ?? DEFAULT_IMAGE
   const title = `${post.title} — Ayan Khan`
 
