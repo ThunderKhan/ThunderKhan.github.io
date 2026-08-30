@@ -4,28 +4,6 @@ function normalizePath(pathname: string) {
   return pathname.replace(/\/+$/, '') || '/'
 }
 
-function resolveInitialPath() {
-  const redirectedPath = new URLSearchParams(window.location.search).get('path')
-
-  if (redirectedPath) {
-    const redirectedUrl = new URL(redirectedPath, window.location.origin)
-    const isBlogRoute =
-      redirectedUrl.origin === window.location.origin &&
-      (redirectedUrl.pathname === '/blog' || redirectedUrl.pathname.startsWith('/blog/'))
-
-    if (isBlogRoute) {
-      window.history.replaceState(
-        {},
-        '',
-        `${redirectedUrl.pathname}${redirectedUrl.search}${redirectedUrl.hash}`,
-      )
-      return normalizePath(redirectedUrl.pathname)
-    }
-  }
-
-  return normalizePath(window.location.pathname)
-}
-
 function scrollToHash(hash: string) {
   let id: string
 
@@ -43,7 +21,7 @@ function scrollToHash(hash: string) {
 }
 
 export function useRouterPath() {
-  const [path, setPath] = useState(resolveInitialPath)
+  const [path, setPath] = useState(() => normalizePath(window.location.pathname))
 
   useEffect(() => {
     const syncPath = () => setPath(normalizePath(window.location.pathname))
