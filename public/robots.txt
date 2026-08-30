@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://thunderkhan.github.io/sitemap.xml
+Sitemap: https://ayankhan.me/sitemap.xml
