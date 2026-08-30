@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FileText, Moon, Sun } from 'lucide-react'
+import { BookOpenText, FileText, Moon, Sun } from 'lucide-react'
 import { site } from '../data/portfolio'
 import { useTheme } from '../hooks/useTheme'
 import type { BackgroundMode } from '../hooks/useBackgroundMode'
@@ -8,14 +8,15 @@ import { BackgroundSelector } from './BackgroundSelector'
 type NavigationProps = {
   backgroundMode: BackgroundMode
   onSelectBackground: (mode: BackgroundMode) => void
+  isBlog?: boolean
 }
 
 /**
- * Minimal transparent top utility bar: monogram, résumé, theme toggle,
+ * Minimal transparent top utility bar: monogram, writing, résumé, theme toggle,
  * and ambient-background selector. Gains a blurred surface after scroll.
- * Section navigation lives in the FloatingDock.
+ * Section navigation lives in the FloatingDock on the portfolio home page.
  */
-export function Navigation({ backgroundMode, onSelectBackground }: NavigationProps) {
+export function Navigation({ backgroundMode, onSelectBackground, isBlog = false }: NavigationProps) {
   const { theme, toggleTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
 
@@ -39,14 +40,27 @@ export function Navigation({ backgroundMode, onSelectBackground }: NavigationPro
         className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6"
       >
         <a
-          href="#hero"
+          href={isBlog ? '/' : '#hero'}
           className="font-mono text-sm font-medium tracking-widest text-foreground transition-colors hover:text-accent"
-          aria-label={`${site.name} — back to top`}
+          aria-label={`${site.name} — ${isBlog ? 'portfolio home' : 'back to top'}`}
         >
           {site.initials}
         </a>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <a
+            href="/blog"
+            className={`flex h-9 items-center gap-1.5 rounded-full border bg-card/60 px-3 text-xs font-medium transition-colors ${
+              isBlog
+                ? 'border-accent/50 text-accent'
+                : 'border-border text-foreground hover:border-accent hover:text-accent'
+            }`}
+          >
+            <BookOpenText size={13} aria-hidden="true" />
+            <span className="hidden sm:inline">Writing</span>
+            <span className="sr-only sm:hidden">Writing</span>
+          </a>
+
           <a
             href={site.resume}
             target="_blank"
