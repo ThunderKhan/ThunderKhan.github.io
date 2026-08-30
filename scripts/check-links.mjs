@@ -23,8 +23,14 @@ async function walk(directory) {
 }
 
 function extractLinks(html) {
+  const withoutResourceHints = html.replace(
+    /<link\b(?=[^>]*\brel=["'](?:preconnect|dns-prefetch)["'])[^>]*>/gi,
+    '',
+  )
   const values = []
-  for (const match of html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)) values.push(match[1])
+  for (const match of withoutResourceHints.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)) {
+    values.push(match[1])
+  }
   return values
 }
 
