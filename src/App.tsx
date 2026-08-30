@@ -11,6 +11,7 @@ import { AmbientBackground } from './components/AmbientBackground'
 import { FloatingDock } from './components/FloatingDock'
 import { BlogIndex } from './components/BlogIndex'
 import { BlogPostPage } from './components/BlogPostPage'
+import { NotFoundPage } from './components/NotFoundPage'
 import { getBlogPost } from './data/blogs'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
 
@@ -31,6 +32,7 @@ export default function App() {
   const isBlog = path === '/blog' || path.startsWith('/blog/')
   const blogSlug = path.startsWith('/blog/') ? decodeURIComponent(path.slice('/blog/'.length)) : null
   const post = blogSlug ? getBlogPost(blogSlug) : undefined
+  const isNotFound = (path.startsWith('/blog/') && !post) || (!isBlog && path !== '/')
 
   return (
     <>
@@ -43,7 +45,9 @@ export default function App() {
       <AmbientBackground mode={mode} />
       <Navigation backgroundMode={mode} onSelectBackground={selectMode} isBlog={isBlog} />
       <main id="main">
-        {path === '/blog' ? (
+        {isNotFound ? (
+          <NotFoundPage />
+        ) : path === '/blog' ? (
           <BlogIndex />
         ) : post ? (
           <BlogPostPage post={post} />
@@ -60,7 +64,7 @@ export default function App() {
         )}
       </main>
       <Footer />
-      {!isBlog && <FloatingDock />}
+      {!isBlog && !isNotFound && <FloatingDock />}
     </>
   )
 }
