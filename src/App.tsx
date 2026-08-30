@@ -9,10 +9,28 @@ import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { AmbientBackground } from './components/AmbientBackground'
 import { FloatingDock } from './components/FloatingDock'
+import { BlogIndex } from './components/BlogIndex'
+import { BlogPostPage } from './components/BlogPostPage'
+import { getBlogPost } from './data/blogs'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
+
+function currentPath() {
+  const redirectedPath = new URLSearchParams(window.location.search).get('path')
+
+  if (redirectedPath?.startsWith('/blog')) {
+    window.history.replaceState({}, '', redirectedPath)
+    return redirectedPath
+  }
+
+  return window.location.pathname.replace(/\/+$/, '') || '/'
+}
 
 export default function App() {
   const { mode, selectMode } = useBackgroundMode()
+  const path = currentPath()
+  const isBlog = path === '/blog' || path.startsWith('/blog/')
+  const blogSlug = path.startsWith('/blog/') ? decodeURIComponent(path.slice('/blog/'.length)) : null
+  const post = blogSlug ? getBlogPost(blogSlug) : undefined
 
   return (
     <>
@@ -23,18 +41,26 @@ export default function App() {
         Skip to main content
       </a>
       <AmbientBackground mode={mode} />
-      <Navigation backgroundMode={mode} onSelectBackground={selectMode} />
+      <Navigation backgroundMode={mode} onSelectBackground={selectMode} isBlog={isBlog} />
       <main id="main">
-        <Hero />
-        <About />
-        <Projects />
-        <OpenSource />
-        <Skills />
-        <Education />
-        <Contact />
+        {path === '/blog' ? (
+          <BlogIndex />
+        ) : post ? (
+          <BlogPostPage post={post} />
+        ) : (
+          <>
+            <Hero />
+            <About />
+            <Projects />
+            <OpenSource />
+            <Skills />
+            <Education />
+            <Contact />
+          </>
+        )}
       </main>
       <Footer />
-      <FloatingDock />
+      {!isBlog && <FloatingDock />}
     </>
   )
 }
