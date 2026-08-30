@@ -47,7 +47,7 @@ React components
     ↓
 Vite production build
     ↓
-blog route prerendering
+blog route + sitemap generation
     ↓
 static dist/ artifact
     ↓
@@ -65,7 +65,7 @@ ayankhan.me
 | Typography | self-hosted Manrope + IBM Plex Mono |
 | Portfolio content | `src/data/portfolio.ts` |
 | Blog content | `src/data/blogs.ts` |
-| Blog route generation | `scripts/prerender-blog.mjs` |
+| Blog route + sitemap generation | `scripts/prerender-blog.mjs` |
 | GitHub activity | `scripts/fetch-github-contributions.mjs` |
 | Quality gates | ESLint, React Hooks, JSX accessibility rules |
 | Delivery | GitHub Actions + GitHub Pages |
@@ -80,6 +80,8 @@ For each post, the build produces route-specific HTML containing the article's t
 /blog
 /blog/<slug>
 ```
+
+The same build step generates `dist/sitemap.xml` directly from the blog metadata, so new posts are discoverable without maintaining a second route list by hand.
 
 This keeps clean public URLs while preserving a fully static deployment model.
 
@@ -151,7 +153,7 @@ Public assets live under:
 public/
 ```
 
-This includes the résumé, favicons, Open Graph image, sitemap, robots file, 404 page, and project imagery.
+This includes the résumé, favicons, Open Graph image, robots file, 404 page, and project imagery.
 
 ---
 
@@ -179,11 +181,9 @@ Each post defines:
 
 During `npm run build`, `scripts/prerender-blog.mjs` reads the blog metadata and writes static HTML entries for `/blog` and every article route.
 
-Until sitemap generation is automated, new articles must also be added to:
+The same metadata produces `dist/sitemap.xml` automatically. Each article route receives its publication date as `<lastmod>`, and the `/blog` entry uses the most recent article date.
 
-```text
-public/sitemap.xml
-```
+Adding a new post therefore requires updating only `src/data/blogs.ts`; no manual sitemap edit is needed.
 
 ---
 
@@ -197,7 +197,8 @@ The repository includes the infrastructure expected from a production personal s
 - Open Graph and Twitter Card metadata;
 - `Person` JSON-LD on the main document;
 - route-specific blog metadata generated at build time;
-- `robots.txt` and `sitemap.xml`;
+- build-generated `sitemap.xml` sourced from blog metadata;
+- `robots.txt`;
 - custom GitHub Pages 404 handling.
 
 ### Accessibility
@@ -223,7 +224,7 @@ Generate GitHub contribution data
 npm run build
 ```
 
-The build includes TypeScript compilation, the Vite production build, and static blog route generation.
+The build includes TypeScript compilation, the Vite production build, static blog route generation, and sitemap generation.
 
 Pushes to `main` run the GitHub Pages deployment workflow. The same production artifact is uploaded and deployed to:
 
@@ -245,14 +246,13 @@ public/
 ├── 404.html                        GitHub Pages route fallback
 ├── favicon.svg
 ├── og-image.png                    default social preview
-├── robots.txt
-└── sitemap.xml
+└── robots.txt
 
 scripts/
 ├── fetch-github-contributions.mjs  build-time GitHub activity
 ├── generate-apple-icon.mjs         icon generation utility
 ├── generate-og.mjs                 social-image generation utility
-└── prerender-blog.mjs              static blog route generator
+└── prerender-blog.mjs              static blog route + sitemap generator
 
 src/
 ├── components/                     portfolio + blog UI
@@ -269,6 +269,8 @@ index.html                          base SEO + JSON-LD + theme bootstrap
 package.json                        scripts and dependencies
 vite.config.ts                      Vite configuration
 ```
+
+Generated production output includes `dist/sitemap.xml`; the sitemap is intentionally not maintained as a source file.
 
 ---
 
