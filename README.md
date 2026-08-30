@@ -83,7 +83,7 @@ For each post, the build produces route-specific HTML containing the article's t
 
 The same build step generates `dist/sitemap.xml` directly from the blog metadata, so new posts are discoverable without maintaining a second route list by hand.
 
-This keeps clean public URLs while preserving a fully static deployment model.
+This keeps clean public URLs while preserving a fully static deployment model. Unknown routes fall through to the standalone `404.html`; blog routes no longer rely on a client-side redirect fallback.
 
 ---
 
@@ -199,7 +199,7 @@ The repository includes the infrastructure expected from a production personal s
 - route-specific blog metadata generated at build time;
 - build-generated `sitemap.xml` sourced from blog metadata;
 - `robots.txt`;
-- custom GitHub Pages 404 handling.
+- standalone noindex 404 page for unknown routes.
 
 ### Accessibility
 
@@ -243,7 +243,7 @@ The deployment workflow also runs daily so the public GitHub contribution data s
 
 public/
 ├── Ayan_Khan_Resume.pdf            public résumé
-├── 404.html                        GitHub Pages route fallback
+├── 404.html                        standalone not-found page
 ├── favicon.svg
 ├── og-image.png                    default social preview
 └── robots.txt
