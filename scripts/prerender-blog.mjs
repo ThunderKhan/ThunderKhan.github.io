@@ -8,7 +8,12 @@ const DIST_DIR = path.join(ROOT, 'dist')
 const BLOG_SOURCE = path.join(ROOT, 'src', 'data', 'blogs.ts')
 const SITE_URL = siteConfig.origin
 const BLOG_URL = `${SITE_URL}${siteConfig.blog.path}`
-const DEFAULT_IMAGE = `${SITE_URL}${siteConfig.defaultOgImage}`
+
+function absoluteUrl(value) {
+  return new URL(value, SITE_URL).href
+}
+
+const DEFAULT_IMAGE = absoluteUrl(siteConfig.defaultOgImage)
 
 function escapeHtml(value) {
   return String(value)
@@ -241,7 +246,7 @@ function renderBlogIndex(template) {
 function renderBlogPost(template, post) {
   const articleUrl = `${BLOG_URL}/${encodeURIComponent(post.slug)}`
   const canonicalUrl = post.canonicalUrl ?? articleUrl
-  const image = post.cover ?? DEFAULT_IMAGE
+  const image = absoluteUrl(post.cover ?? siteConfig.defaultOgImage)
   const title = `${post.title} — ${siteConfig.authorName}`
 
   let html = replaceTitle(template, title)
