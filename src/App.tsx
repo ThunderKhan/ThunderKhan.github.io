@@ -14,17 +14,7 @@ import { BlogPostPage } from './components/BlogPostPage'
 import { NotFoundPage } from './components/NotFoundPage'
 import { getBlogPost } from './data/blog-posts'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
-
-function currentPath() {
-  const redirectedPath = new URLSearchParams(window.location.search).get('path')
-
-  if (redirectedPath?.startsWith('/blog')) {
-    window.history.replaceState({}, '', redirectedPath)
-    return redirectedPath
-  }
-
-  return window.location.pathname.replace(/\/+$/, '') || '/'
-}
+import { useRouterPath } from './hooks/useRouterPath'
 
 function decodeBlogSlug(path: string) {
   if (!path.startsWith('/blog/')) return null
@@ -38,7 +28,7 @@ function decodeBlogSlug(path: string) {
 
 export default function App() {
   const { mode, selectMode } = useBackgroundMode()
-  const path = currentPath()
+  const path = useRouterPath()
   const isBlog = path === '/blog' || path.startsWith('/blog/')
   const blogSlug = decodeBlogSlug(path)
   const post = blogSlug ? getBlogPost(blogSlug) : undefined

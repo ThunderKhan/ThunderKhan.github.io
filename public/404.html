@@ -9,7 +9,8 @@
       // GitHub Pages serves this file for client-side routes. Send blog routes
       // through the SPA entry point once, preserving the clean URL afterward.
       if (window.location.pathname === '/blog' || window.location.pathname.startsWith('/blog/')) {
-        window.location.replace('/?path=' + encodeURIComponent(window.location.pathname))
+        const route = window.location.pathname + window.location.search + window.location.hash
+        window.location.replace('/?path=' + encodeURIComponent(route))
       }
     </script>
     <style>
