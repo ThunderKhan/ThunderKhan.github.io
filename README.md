@@ -1,132 +1,157 @@
 # Ayan Khan — Portfolio
 
-A minimal, editorial-style personal portfolio built with React, TypeScript, Vite, and Tailwind CSS. Deployed as a fully static site to GitHub Pages via GitHub Actions.
+Personal portfolio and writing site for Ayan Khan, built as a fast static React application and deployed to GitHub Pages.
 
-Live site (after deployment): `https://GITHUB_USERNAME.github.io/`
+**Live site:** [ayankhan.me](https://ayankhan.me/)  
+**Writing:** [ayankhan.me/blog](https://ayankhan.me/blog)
 
-## Install dependencies
+![Portfolio preview](public/og-image.png)
 
-```bash
-npm install
+## About
+
+This repository powers my personal developer portfolio. It brings together my projects, open-source work, technical interests, education, résumé, GitHub activity, and long-form engineering writing in one place.
+
+The site is designed to stay lightweight and maintainable while still supporting route-specific SEO metadata, static blog routes, accessibility checks, and automated deployment.
+
+## Highlights
+
+- Responsive single-page portfolio with dedicated project, open-source, skills, education, and contact sections.
+- First-class writing section at `/blog` with individual article routes.
+- Static blog route generation for GitHub Pages so article URLs have crawlable route-specific metadata.
+- Open Graph, Twitter Card, canonical URL, sitemap, robots, and JSON-LD metadata.
+- Build-time GitHub contribution data used by the activity section.
+- Light/dark theme support and selectable ambient backgrounds.
+- Reduced-motion support and keyboard-accessible interactions.
+- Self-hosted Manrope typography.
+- ESLint, React Hooks, and JSX accessibility checks enforced in CI.
+- Automatic GitHub Pages deployment from `main`.
+
+## Tech stack
+
+| Area | Technology |
+| --- | --- |
+| UI | React 19, TypeScript |
+| Build | Vite 7 |
+| Styling | Tailwind CSS 4 |
+| Motion | Motion |
+| Icons | Lucide React |
+| Fonts | Fontsource Manrope, IBM Plex Mono |
+| Quality | ESLint, `typescript-eslint`, React Hooks, `jsx-a11y` |
+| Deployment | GitHub Actions, GitHub Pages |
+
+## Repository structure
+
+```text
+.
+├── .github/workflows/
+│   ├── ci.yml                         # PR/manual lint + production build
+│   └── deploy.yml                     # GitHub Pages deployment
+├── public/
+│   ├── Ayan_Khan_Resume.pdf
+│   ├── 404.html
+│   ├── favicon.svg
+│   ├── og-image.png
+│   ├── robots.txt
+│   └── sitemap.xml
+├── scripts/
+│   ├── fetch-github-contributions.mjs # Build-time public GitHub activity
+│   ├── generate-apple-icon.mjs
+│   ├── generate-og.mjs
+│   └── prerender-blog.mjs             # Generates static /blog HTML routes
+├── src/
+│   ├── components/                    # Portfolio and blog UI
+│   ├── data/
+│   │   ├── portfolio.ts               # Portfolio content and links
+│   │   └── blogs.ts                   # Blog metadata and article content
+│   ├── hooks/
+│   ├── App.tsx                        # Route selection and page composition
+│   ├── index.css
+│   └── main.tsx
+├── eslint.config.mjs
+├── index.html                         # Base SEO, JSON-LD, theme bootstrap
+├── package.json
+└── vite.config.ts
 ```
 
-## Run locally
+## Local development
+
+Requirements:
+
+- Node.js 22 or newer
+- npm
+
+Install dependencies:
+
+```bash
+npm ci
+```
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
-
-To create a production build and preview it:
+Run the quality checks:
 
 ```bash
+npm run lint
 npm run build
+```
+
+Preview the production build locally:
+
+```bash
 npm run preview
 ```
 
-The static output is generated in `dist/`.
+The production output is written to `dist/`.
 
-## Update portfolio content
+## Updating portfolio content
 
-All editable content lives in one file:
+Most portfolio copy and structured content lives in:
 
-```
+```text
 src/data/portfolio.ts
 ```
 
-Edit that file to change the intro, skills, education, timeline entries, projects, and links. Before publishing, replace these placeholders:
+This includes the site identity, links, résumé path, about content, education, projects, skills, interests, and related portfolio data.
 
-| Placeholder | Where | Replace with |
-| --- | --- | --- |
-| `YOUR_EMAIL` | `src/data/portfolio.ts` | Your professional email |
-| `YOUR_GITHUB_URL` | `src/data/portfolio.ts`, `index.html` | Your GitHub profile URL |
-| `YOUR_LEETCODE_URL` | `src/data/portfolio.ts` | Your LeetCode profile URL |
-| `GITHUB_USERNAME` | `index.html`, `public/robots.txt`, `public/sitemap.xml` | Your GitHub username |
+Static assets such as the résumé, icons, Open Graph image, and project screenshots live under `public/`.
 
-The three project cards contain clearly-labelled **sample content** — replace them with your real projects before publishing.
+## Publishing a blog post
 
-## Where to place the résumé
+Blog posts are defined in:
 
-Put your PDF at:
-
-```
-public/Ayan_Khan_Resume.pdf
+```text
+src/data/blogs.ts
 ```
 
-It will be served from `/Ayan_Khan_Resume.pdf`, which is what all the "View Résumé" and "Download" buttons already point to.
+Each post contains its slug, title, description, publication date, tags, cover image, canonical URL, related publication links, repository link, and structured content blocks.
 
-## How to add project screenshots
+During `npm run build`, `scripts/prerender-blog.mjs` generates static HTML entries for `/blog` and every configured article route. This gives GitHub Pages real route files with article-specific title, description, canonical, Open Graph, Twitter, and publication metadata before React runs.
 
-1. Add an image to `public/projects/` (e.g. `public/projects/my-app.png`).
-2. In `src/data/portfolio.ts`, set the project's `screenshot` field to `/projects/my-app.png` and write a descriptive `screenshotAlt`.
+When adding a new article, also keep `public/sitemap.xml` in sync until sitemap generation is automated.
 
-Recommended size: roughly 1280 × 800 (16:10). PNG or WebP both work.
+## CI and deployment
 
-## Create the GitHub Pages repository
+Pull requests to `main` run the portfolio CI workflow, which installs dependencies, lints the source, generates GitHub contribution data, and builds the production site.
 
-This site is designed as a GitHub **user site**, so the repository name matters:
+Pushes to `main` run the GitHub Pages deployment workflow. The workflow builds the same `dist/` artifact and publishes it to the live custom domain:
 
-1. Sign in to GitHub and create a new **public** repository named exactly:
-   ```
-   GITHUB_USERNAME.github.io
-   ```
-   (replace `GITHUB_USERNAME` with your actual username, e.g. `ayankhan.github.io`).
-2. Push this project to it:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial portfolio"
-   git branch -M main
-   git remote add origin https://github.com/GITHUB_USERNAME/GITHUB_USERNAME.github.io.git
-   git push -u origin main
-   ```
+[https://ayankhan.me/](https://ayankhan.me/)
 
-## Enable GitHub Pages
+## SEO and routing
 
-1. In the repository, go to **Settings → Pages**.
-2. Under **Build and deployment → Source**, choose **GitHub Actions**.
-3. That's it — the included workflow (`.github/workflows/deploy.yml`) handles the rest.
+The repository includes:
 
-## Deploy updates
+- Canonical URLs for the custom domain.
+- Open Graph and Twitter Card metadata.
+- `Person` structured data on the main document.
+- Route-specific blog metadata generated at build time.
+- `robots.txt` and `sitemap.xml`.
+- A GitHub Pages `404.html` fallback for unresolved routes.
 
-Every push to `main` triggers the workflow, which builds the site and deploys `dist/` to GitHub Pages:
+## License
 
-```bash
-git add .
-git commit -m "Update content"
-git push
-```
-
-You can watch progress in the repository's **Actions** tab. The site updates at `https://GITHUB_USERNAME.github.io/` within a minute or two.
-
-## Connect a custom domain later
-
-1. Buy a domain from any registrar.
-2. In the repository, go to **Settings → Pages → Custom domain**, enter your domain, and save. GitHub creates a `CNAME` file through the Pages settings.
-3. At your DNS provider:
-   - For an apex domain (`example.com`), add `A` records pointing to GitHub Pages' IPs:
-     `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - For a subdomain (`www.example.com`), add a `CNAME` record pointing to `GITHUB_USERNAME.github.io`.
-4. Back in **Settings → Pages**, enable **Enforce HTTPS** once the certificate is issued.
-5. Update the canonical URL and Open Graph URLs in `index.html`, plus `public/robots.txt` and `public/sitemap.xml`, to use the new domain.
-
-## Project structure
-
-```
-├── .github/workflows/deploy.yml   # GitHub Pages deployment
-├── index.html                     # Meta tags, fonts, JSON-LD, theme bootstrap
-├── public/
-│   ├── 404.html                   # Static not-found page
-│   ├── favicon.svg                # Placeholder favicon
-│   ├── robots.txt
-│   ├── sitemap.xml
-│   └── projects/                  # Project screenshots
-└── src/
-    ├── data/portfolio.ts          # ← All editable content
-    ├── hooks/                     # Theme + active-section hooks
-    ├── components/                # Page sections
-    ├── App.tsx
-    ├── main.tsx
-    └── index.css                  # Tailwind theme tokens
-```
+This repository contains my personal portfolio content, résumé, writing, and branding. Unless a file explicitly states otherwise, please do not reuse those personal assets or present this site as your own.
