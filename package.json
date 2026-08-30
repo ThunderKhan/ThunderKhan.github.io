@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint . --max-warnings=0",
+    "test": "node --test tests/blog-utilities.test.mjs",
+    "test:build": "node --test tests/build-output.test.mjs",
     "build": "tsc -b && vite build && node scripts/prerender-blog.mjs && node scripts/apply-code-languages.mjs && node scripts/apply-heading-links.mjs && node scripts/apply-reading-time.mjs",
     "preview": "vite preview"
   },
