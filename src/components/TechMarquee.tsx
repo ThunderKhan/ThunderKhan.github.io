@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export type TechChip = {
   name: string
   /** Styled as "currently learning" — dashed, muted, no expertise implied. */
@@ -35,19 +37,32 @@ function ChipList({ chips, hidden }: { chips: TechChip[]; hidden?: boolean }) {
 /**
  * Horizontal technology marquee.
  * - Content is duplicated once (aria-hidden) purely for a seamless loop.
- * - Pauses on hover and keyboard focus (container is focusable).
+ * - Pauses on hover and provides a keyboard-accessible pause/resume control.
  * - Under prefers-reduced-motion — and on small screens — it degrades
  *   into a static wrapped chip list (see marquee styles in index.css).
  */
 export function TechMarquee({ chips, label }: { chips: TechChip[]; label: string }) {
+  const [paused, setPaused] = useState(false)
+
   return (
     <div
-      className="marquee-container marquee-mask overflow-hidden rounded-3xl border border-border bg-card/60 px-2 py-4"
+      className="marquee-container marquee-mask relative overflow-hidden rounded-3xl border border-border bg-card/60 px-2 py-4"
       role="group"
       aria-label={label}
-      tabIndex={0}
     >
-      <div className="marquee-track flex w-max">
+      <button
+        type="button"
+        aria-pressed={paused}
+        onClick={() => setPaused((value) => !value)}
+        className="sr-only z-10 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground focus:not-sr-only focus:absolute focus:top-2 focus:right-2"
+      >
+        {paused ? 'Resume technology marquee' : 'Pause technology marquee'}
+      </button>
+
+      <div
+        className="marquee-track flex w-max"
+        style={{ animationPlayState: paused ? 'paused' : 'running' }}
+      >
         <ChipList chips={chips} />
         <ChipList chips={chips} hidden />
       </div>
