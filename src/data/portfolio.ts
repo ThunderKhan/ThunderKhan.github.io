@@ -26,7 +26,7 @@ export const site = {
     'Open to internships, open-source collaboration, hackathons, and opportunities to learn with strong engineering teams.',
   location: 'India',
   /** Canonical URL of the deployed site. */
-  url: 'https://thunderkhan.github.io/',
+  url: 'https://ayankhan.me/',
   /** Path to the résumé PDF. Place the file at public/Ayan_Khan_Resume.pdf */
   resume: '/Ayan_Khan_Resume.pdf',
 }
