@@ -7,16 +7,33 @@ function normalizePath(pathname: string) {
 function resolveInitialPath() {
   const redirectedPath = new URLSearchParams(window.location.search).get('path')
 
-  if (redirectedPath === '/blog' || redirectedPath?.startsWith('/blog/')) {
-    window.history.replaceState({}, '', redirectedPath)
-    return normalizePath(redirectedPath)
+  if (redirectedPath) {
+    const redirectedUrl = new URL(redirectedPath, window.location.origin)
+    const isBlogRoute =
+      redirectedUrl.origin === window.location.origin &&
+      (redirectedUrl.pathname === '/blog' || redirectedUrl.pathname.startsWith('/blog/'))
+
+    if (isBlogRoute) {
+      window.history.replaceState(
+        {},
+        '',
+        `${redirectedUrl.pathname}${redirectedUrl.search}${redirectedUrl.hash}`,
+      )
+      return normalizePath(redirectedUrl.pathname)
+    }
   }
 
   return normalizePath(window.location.pathname)
 }
 
 function scrollToHash(hash: string) {
-  const id = decodeURIComponent(hash.slice(1))
+  let id: string
+
+  try {
+    id = decodeURIComponent(hash.slice(1))
+  } catch {
+    return
+  }
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -47,7 +64,13 @@ export function useRouterPath() {
       if (!(target instanceof Element)) return
 
       const anchor = target.closest<HTMLAnchorElement>('a[href]')
-      if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return
+      if (
+        !anchor ||
+        (anchor.target && anchor.target !== '_self') ||
+        anchor.hasAttribute('download')
+      ) {
+        return
+      }
 
       const url = new URL(anchor.href, window.location.href)
       if (url.origin !== window.location.origin) return
