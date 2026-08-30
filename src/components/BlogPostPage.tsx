@@ -50,24 +50,74 @@ function renderBlock(block: BlogBlock, index: number) {
   }
 }
 
-function setMeta(name: string, content: string) {
-  let element = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)
+function setMeta(selector: string, attribute: 'name' | 'property', key: string, content: string) {
+  let element = document.querySelector<HTMLMetaElement>(selector)
+  const created = !element
+  const previousContent = element?.content
+
   if (!element) {
     element = document.createElement('meta')
-    element.name = name
+    element.setAttribute(attribute, key)
     document.head.appendChild(element)
   }
+
   element.content = content
+
+  return () => {
+    if (created) {
+      element?.remove()
+    } else if (element && previousContent !== undefined) {
+      element.content = previousContent
+    }
+  }
+}
+
+function setCanonical(href: string) {
+  let element = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+  const created = !element
+  const previousHref = element?.href
+
+  if (!element) {
+    element = document.createElement('link')
+    element.rel = 'canonical'
+    document.head.appendChild(element)
+  }
+
+  element.href = href
+
+  return () => {
+    if (created) {
+      element?.remove()
+    } else if (element && previousHref !== undefined) {
+      element.href = previousHref
+    }
+  }
 }
 
 export function BlogPostPage({ post }: { post: BlogPost }) {
   useEffect(() => {
     const previousTitle = document.title
+    const articleUrl = `https://ayankhan.me/blog/${encodeURIComponent(post.slug)}`
+    const canonicalUrl = post.canonical ?? articleUrl
+    const coverUrl = post.cover ?? 'https://ayankhan.me/og-image.png?v=3'
+    const restore = [
+      setMeta('meta[name="description"]', 'name', 'description', post.description),
+      setMeta('meta[property="og:type"]', 'property', 'og:type', 'article'),
+      setMeta('meta[property="og:title"]', 'property', 'og:title', post.title),
+      setMeta('meta[property="og:description"]', 'property', 'og:description', post.description),
+      setMeta('meta[property="og:url"]', 'property', 'og:url', articleUrl),
+      setMeta('meta[property="og:image"]', 'property', 'og:image', coverUrl),
+      setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', post.title),
+      setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', post.description),
+      setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', coverUrl),
+      setCanonical(canonicalUrl),
+    ]
+
     document.title = `${post.title} — Ayan Khan`
-    setMeta('description', post.description)
 
     return () => {
       document.title = previousTitle
+      restore.reverse().forEach((restoreValue) => restoreValue())
     }
   }, [post])
 
@@ -119,30 +169,32 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
 
       {post.cover ? (
         <div className="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60 shadow-2xl shadow-accent/5">
-          <img src={post.cover} alt="diff2test project overview" className="w-full object-cover" />
+          <img src={post.cover} alt={`${post.title} cover`} className="w-full object-cover" />
         </div>
       ) : null}
 
       <div className="mx-auto mt-12 max-w-3xl">{post.content.map(renderBlock)}</div>
 
-      <footer className="mx-auto mt-16 max-w-3xl border-t border-border pt-8">
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-sm font-medium text-foreground">More on this project</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Source, release notes, and verification live in the diff2test repository.
-            </p>
+      {post.canonical ? (
+        <footer className="mx-auto mt-16 max-w-3xl border-t border-border pt-8">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-sm font-medium text-foreground">Also published elsewhere</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                This article is cross-posted on another publishing platform.
+              </p>
+            </div>
+            <a
+              href={post.canonical}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 self-start rounded-full border border-border bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
+            >
+              View publication <ArrowUpRight size={15} aria-hidden="true" />
+            </a>
           </div>
-          <a
-            href="https://github.com/ThunderKhan/diff2test"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 self-start rounded-full border border-border bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
-          >
-            View repository <ArrowUpRight size={15} aria-hidden="true" />
-          </a>
-        </div>
-      </footer>
+        </footer>
+      ) : null}
     </article>
   )
 }
