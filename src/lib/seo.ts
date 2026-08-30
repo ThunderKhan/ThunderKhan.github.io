@@ -2,6 +2,7 @@ export type SeoMeta = {
   title: string
   description: string
   canonicalUrl: string
+  robots?: string
   ogType?: 'website' | 'article'
   ogTitle?: string
   ogDescription?: string
@@ -65,6 +66,7 @@ export function applySeo({
   title,
   description,
   canonicalUrl,
+  robots,
   ogType = 'website',
   ogTitle = title,
   ogDescription = description,
@@ -86,6 +88,7 @@ export function applySeo({
     setCanonical(canonicalUrl),
   ]
 
+  if (robots) restore.push(setMeta('name', 'robots', robots))
   if (ogImage) restore.push(setMeta('property', 'og:image', ogImage))
   if (ogImageAlt) restore.push(setMeta('property', 'og:image:alt', ogImageAlt))
   if (twitterTitle) restore.push(setMeta('name', 'twitter:title', twitterTitle))

@@ -46,7 +46,7 @@ export default function App() {
       <Navigation backgroundMode={mode} onSelectBackground={selectMode} isBlog={isBlog} />
       <main id="main">
         {isNotFound ? (
-          <NotFoundPage />
+          <NotFoundPage path={path} />
         ) : path === '/blog' ? (
           <BlogIndex />
         ) : post ? (
