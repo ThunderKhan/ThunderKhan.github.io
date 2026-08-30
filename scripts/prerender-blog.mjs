@@ -1,12 +1,14 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import ts from 'typescript'
+import siteConfig from '../src/config/site.json' with { type: 'json' }
 
 const ROOT = process.cwd()
 const DIST_DIR = path.join(ROOT, 'dist')
 const BLOG_SOURCE = path.join(ROOT, 'src', 'data', 'blogs.ts')
-const SITE_URL = 'https://ayankhan.me'
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.png?v=3`
+const SITE_URL = siteConfig.origin
+const BLOG_URL = `${SITE_URL}${siteConfig.blog.path}`
+const DEFAULT_IMAGE = `${SITE_URL}${siteConfig.defaultOgImage}`
 
 function escapeHtml(value) {
   return String(value)
@@ -62,7 +64,7 @@ function addBlogPostingJsonLd(html, post, canonicalUrl, image) {
     datePublished: post.date,
     author: {
       '@type': 'Person',
-      name: 'Ayan Khan',
+      name: siteConfig.authorName,
       url: SITE_URL,
     },
     image,
@@ -200,7 +202,7 @@ function renderStaticArticle(post) {
 
   return `<article data-static-blog-article="true" class="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
     <div class="mx-auto max-w-3xl">
-      <a href="/blog" class="text-sm font-medium text-muted-foreground">← All writing</a>
+      <a href="${siteConfig.blog.path}" class="text-sm font-medium text-muted-foreground">← All writing</a>
       <header class="mt-8">
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground">
           <time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>
@@ -218,30 +220,29 @@ function renderStaticArticle(post) {
 }
 
 function renderBlogIndex(template) {
-  const url = `${SITE_URL}/blog`
-  const title = 'Writing — Ayan Khan'
-  const description = 'Engineering notes on systems, developer tooling, open source, and the decisions behind the things I build.'
+  const title = siteConfig.blog.title
+  const description = siteConfig.blog.description
 
   let html = replaceTitle(template, title)
   html = replaceMeta(html, 'name', 'description', description)
   html = replaceMeta(html, 'property', 'og:type', 'website')
   html = replaceMeta(html, 'property', 'og:title', title)
   html = replaceMeta(html, 'property', 'og:description', description)
-  html = replaceMeta(html, 'property', 'og:url', url)
+  html = replaceMeta(html, 'property', 'og:url', BLOG_URL)
   html = replaceMeta(html, 'property', 'og:image', DEFAULT_IMAGE)
   html = replaceMeta(html, 'name', 'twitter:title', title)
   html = replaceMeta(html, 'name', 'twitter:description', description)
   html = replaceMeta(html, 'name', 'twitter:image', DEFAULT_IMAGE)
-  html = replaceCanonical(html, url)
+  html = replaceCanonical(html, BLOG_URL)
 
   return html
 }
 
 function renderBlogPost(template, post) {
-  const articleUrl = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`
+  const articleUrl = `${BLOG_URL}/${encodeURIComponent(post.slug)}`
   const canonicalUrl = post.canonicalUrl ?? articleUrl
   const image = post.cover ?? DEFAULT_IMAGE
-  const title = `${post.title} — Ayan Khan`
+  const title = `${post.title} — ${siteConfig.authorName}`
 
   let html = replaceTitle(template, title)
   html = replaceMeta(html, 'name', 'description', post.description)
@@ -265,9 +266,9 @@ function renderSitemap(posts) {
   const latestPostDate = posts.reduce((latest, post) => (post.date > latest ? post.date : latest), '')
   const entries = [
     { loc: `${SITE_URL}/` },
-    { loc: `${SITE_URL}/blog`, lastmod: latestPostDate || undefined },
+    { loc: BLOG_URL, lastmod: latestPostDate || undefined },
     ...posts.map((post) => ({
-      loc: `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`,
+      loc: `${BLOG_URL}/${encodeURIComponent(post.slug)}`,
       lastmod: post.date,
     })),
   ]
@@ -295,16 +296,16 @@ async function main() {
   const template = await fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf8')
   const posts = await readBlogPosts()
 
-  await writeRoute('/blog', renderBlogIndex(template))
+  await writeRoute(siteConfig.blog.path, renderBlogIndex(template))
 
   for (const post of posts) {
-    await writeRoute(`/blog/${post.slug}`, renderBlogPost(template, post))
+    await writeRoute(`${siteConfig.blog.path}/${post.slug}`, renderBlogPost(template, post))
   }
 
   await fs.writeFile(path.join(DIST_DIR, 'sitemap.xml'), renderSitemap(posts))
 
   console.log(
-    `Prerendered /blog and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'} with BlogPosting JSON-LD; generated sitemap.xml.`,
+    `Prerendered ${siteConfig.blog.path} and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'} with BlogPosting JSON-LD; generated sitemap.xml.`,
   )
 }
 

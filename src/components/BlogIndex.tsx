@@ -1,20 +1,18 @@
 import { ArrowUpRight, Clock3 } from 'lucide-react'
 import { useEffect } from 'react'
+import siteConfig from '../config/site.json'
 import { blogPosts } from '../data/blogs'
 import { applySeo } from '../lib/seo'
 
-const BLOG_TITLE = 'Writing — Ayan Khan'
-const BLOG_DESCRIPTION =
-  'Engineering notes on systems, developer tooling, open source, and the decisions behind the software I build.'
-const BLOG_URL = 'https://ayankhan.me/blog'
-const BLOG_IMAGE = 'https://ayankhan.me/og-image.png?v=3'
+const BLOG_URL = `${siteConfig.origin}${siteConfig.blog.path}`
+const BLOG_IMAGE = `${siteConfig.origin}${siteConfig.defaultOgImage}`
 
 export function BlogIndex() {
   useEffect(
     () =>
       applySeo({
-        title: BLOG_TITLE,
-        description: BLOG_DESCRIPTION,
+        title: siteConfig.blog.title,
+        description: siteConfig.blog.description,
         canonicalUrl: BLOG_URL,
         ogImage: BLOG_IMAGE,
       }),
