@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowUpRight, Clock3, Github } from 'lucide-react'
 import { useEffect } from 'react'
+import siteConfig from '../config/site.json'
 import type { BlogBlock, BlogPost } from '../data/blogs'
 import { applySeo } from '../lib/seo'
 
@@ -53,12 +54,12 @@ function renderBlock(block: BlogBlock, index: number) {
 
 export function BlogPostPage({ post }: { post: BlogPost }) {
   useEffect(() => {
-    const articleUrl = `https://ayankhan.me/blog/${encodeURIComponent(post.slug)}`
+    const articleUrl = `${siteConfig.origin}${siteConfig.blog.path}/${encodeURIComponent(post.slug)}`
     const canonicalUrl = post.canonicalUrl ?? articleUrl
-    const coverUrl = post.cover ?? 'https://ayankhan.me/og-image.png?v=3'
+    const coverUrl = post.cover ?? `${siteConfig.origin}${siteConfig.defaultOgImage}`
 
     return applySeo({
-      title: `${post.title} — Ayan Khan`,
+      title: `${post.title} — ${siteConfig.authorName}`,
       description: post.description,
       canonicalUrl,
       ogType: 'article',
