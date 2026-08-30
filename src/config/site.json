@@ -1,0 +1,10 @@
+{
+  "authorName": "Ayan Khan",
+  "origin": "https://ayankhan.me",
+  "defaultOgImage": "/og-image.png?v=3",
+  "blog": {
+    "title": "Writing — Ayan Khan",
+    "description": "Engineering notes on systems, developer tooling, open source, and the decisions behind the software I build.",
+    "path": "/blog"
+  }
+}
