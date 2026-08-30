@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, Clock3 } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Clock3, Github } from 'lucide-react'
 import { useEffect } from 'react'
 import type { BlogBlock, BlogPost } from '../data/blogs'
 
@@ -98,7 +98,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
   useEffect(() => {
     const previousTitle = document.title
     const articleUrl = `https://ayankhan.me/blog/${encodeURIComponent(post.slug)}`
-    const canonicalUrl = post.canonical ?? articleUrl
+    const canonicalUrl = post.canonicalUrl ?? articleUrl
     const coverUrl = post.cover ?? 'https://ayankhan.me/og-image.png?v=3'
     const restore = [
       setMeta('meta[name="description"]', 'name', 'description', post.description),
@@ -120,6 +120,8 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
       restore.reverse().forEach((restoreValue) => restoreValue())
     }
   }, [post])
+
+  const hasRelatedLinks = Boolean(post.repositoryUrl || post.crossPosts?.length)
 
   return (
     <article className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
@@ -175,23 +177,38 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
 
       <div className="mx-auto mt-12 max-w-3xl">{post.content.map(renderBlock)}</div>
 
-      {post.canonical ? (
+      {hasRelatedLinks ? (
         <footer className="mx-auto mt-16 max-w-3xl border-t border-border pt-8">
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
             <div>
-              <p className="text-sm font-medium text-foreground">Also published elsewhere</p>
+              <p className="text-sm font-medium text-foreground">Links & publication</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                This article is cross-posted on another publishing platform.
+                Source code and other places where this article is published.
               </p>
             </div>
-            <a
-              href={post.canonical}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 self-start rounded-full border border-border bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
-            >
-              View publication <ArrowUpRight size={15} aria-hidden="true" />
-            </a>
+            <div className="flex flex-wrap gap-2 sm:justify-end">
+              {post.repositoryUrl ? (
+                <a
+                  href={post.repositoryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
+                >
+                  <Github size={15} aria-hidden="true" /> Repository
+                </a>
+              ) : null}
+              {post.crossPosts?.map((crossPost) => (
+                <a
+                  key={crossPost.url}
+                  href={crossPost.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
+                >
+                  {crossPost.label} <ArrowUpRight size={15} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </div>
         </footer>
       ) : null}
