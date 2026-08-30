@@ -6,17 +6,14 @@ on:
       - chore/dependency-audit
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   audit:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          ref: chore/dependency-audit
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -24,16 +21,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Update vulnerable transitive dependencies
-        run: npm audit fix --package-lock-only --ignore-scripts
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Commit lockfile update
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package-lock.json
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m "chore: update vulnerable transitive dependencies"
-          git push
+      - name: Audit dependencies
+        run: npm audit --audit-level=low
+
+      - name: Lint source
+        run: npm run lint
+
+      - name: Build website
+        run: npm run build
