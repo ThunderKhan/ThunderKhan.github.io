@@ -14,6 +14,7 @@ function absoluteUrl(value) {
 }
 
 const DEFAULT_IMAGE = absoluteUrl(siteConfig.defaultOgImage)
+const BLOG_IMAGE_ALT = `${siteConfig.authorName} — writing on systems, developer tooling, and open source`
 
 function escapeHtml(value) {
   return String(value)
@@ -235,9 +236,11 @@ function renderBlogIndex(template) {
   html = replaceMeta(html, 'property', 'og:description', description)
   html = replaceMeta(html, 'property', 'og:url', BLOG_URL)
   html = replaceMeta(html, 'property', 'og:image', DEFAULT_IMAGE)
+  html = replaceMeta(html, 'property', 'og:image:alt', BLOG_IMAGE_ALT)
   html = replaceMeta(html, 'name', 'twitter:title', title)
   html = replaceMeta(html, 'name', 'twitter:description', description)
   html = replaceMeta(html, 'name', 'twitter:image', DEFAULT_IMAGE)
+  html = replaceMeta(html, 'name', 'twitter:image:alt', BLOG_IMAGE_ALT)
   html = replaceCanonical(html, BLOG_URL)
 
   return html
@@ -247,6 +250,7 @@ function renderBlogPost(template, post) {
   const articleUrl = `${BLOG_URL}/${encodeURIComponent(post.slug)}`
   const canonicalUrl = post.canonicalUrl ?? articleUrl
   const image = absoluteUrl(post.cover ?? siteConfig.defaultOgImage)
+  const imageAlt = `${post.title} cover image`
   const title = `${post.title} — ${siteConfig.authorName}`
 
   let html = replaceTitle(template, title)
@@ -256,9 +260,11 @@ function renderBlogPost(template, post) {
   html = replaceMeta(html, 'property', 'og:description', post.description)
   html = replaceMeta(html, 'property', 'og:url', articleUrl)
   html = replaceMeta(html, 'property', 'og:image', image)
+  html = replaceMeta(html, 'property', 'og:image:alt', imageAlt)
   html = replaceMeta(html, 'name', 'twitter:title', post.title)
   html = replaceMeta(html, 'name', 'twitter:description', post.description)
   html = replaceMeta(html, 'name', 'twitter:image', image)
+  html = replaceMeta(html, 'name', 'twitter:image:alt', imageAlt)
   html = replaceCanonical(html, canonicalUrl)
   html = addArticlePublishedTime(html, post.date)
   html = addBlogPostingJsonLd(html, post, canonicalUrl, image)
@@ -310,7 +316,7 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'sitemap.xml'), renderSitemap(posts))
 
   console.log(
-    `Prerendered ${siteConfig.blog.path} and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'} with BlogPosting JSON-LD; generated sitemap.xml.`,
+    `Prerendered ${siteConfig.blog.path} and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'} with BlogPosting JSON-LD and social image alt metadata; generated sitemap.xml.`,
   )
 }
 
