@@ -1,7 +1,7 @@
 import { ArrowUpRight, Clock3 } from 'lucide-react'
 import { useEffect } from 'react'
 import siteConfig from '../config/site.json'
-import { blogPosts } from '../data/blogs'
+import { blogPosts } from '../data/blog-posts'
 import { applySeo } from '../lib/seo'
 
 const BLOG_URL = `${siteConfig.origin}${siteConfig.blog.path}`
