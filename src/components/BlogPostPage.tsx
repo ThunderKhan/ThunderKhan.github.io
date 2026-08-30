@@ -2,17 +2,31 @@ import { ArrowLeft, ArrowUpRight, Clock3, Github } from 'lucide-react'
 import { useEffect } from 'react'
 import siteConfig from '../config/site.json'
 import type { BlogBlock, BlogPost } from '../data/blogs'
+import { getHeadingEntries } from '../lib/blog-headings.js'
 import { applySeo } from '../lib/seo'
 
-function renderBlock(block: BlogBlock, index: number) {
+function renderBlock(block: BlogBlock, index: number, headingId?: string) {
   switch (block.type) {
     case 'heading':
       return (
         <h2
           key={index}
-          className="mt-14 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+          id={headingId}
+          className="group mt-14 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
         >
-          {block.text}
+          <a
+            href={headingId ? `#${headingId}` : undefined}
+            className="transition-colors hover:text-accent"
+            aria-label={`Link to section: ${block.text}`}
+          >
+            {block.text}
+            <span
+              aria-hidden="true"
+              className="ml-2 font-mono text-base text-accent opacity-0 transition-opacity group-hover:opacity-70 group-focus-within:opacity-70"
+            >
+              #
+            </span>
+          </a>
         </h2>
       )
     case 'quote':
@@ -73,6 +87,9 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
   }, [post])
 
   const hasRelatedLinks = Boolean(post.repositoryUrl || post.crossPosts?.length)
+  const headings = getHeadingEntries(post.content)
+  const headingByIndex = new Map(headings.map(({ index, id }) => [index, id]))
+  const showTableOfContents = headings.length >= 4
 
   return (
     <article className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
@@ -126,7 +143,30 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
         </div>
       ) : null}
 
-      <div className="mx-auto mt-12 max-w-3xl">{post.content.map(renderBlock)}</div>
+      {showTableOfContents ? (
+        <nav
+          aria-label="Table of contents"
+          className="mx-auto mt-12 max-w-3xl rounded-2xl border border-border bg-card/45 p-5 sm:p-6"
+        >
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">On this page</p>
+          <ol className="mt-4 grid gap-2 sm:grid-cols-2 sm:gap-x-8">
+            {headings.map((heading) => (
+              <li key={heading.id}>
+                <a
+                  href={`#${heading.id}`}
+                  className="text-sm leading-6 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
+
+      <div className="mx-auto mt-12 max-w-3xl">
+        {post.content.map((block, index) => renderBlock(block, index, headingByIndex.get(index)))}
+      </div>
 
       {hasRelatedLinks ? (
         <footer className="mx-auto mt-16 max-w-3xl border-t border-border pt-8">
