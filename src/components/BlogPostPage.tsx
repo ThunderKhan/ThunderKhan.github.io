@@ -57,6 +57,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
     const articleUrl = `${siteConfig.origin}${siteConfig.blog.path}/${encodeURIComponent(post.slug)}`
     const canonicalUrl = post.canonicalUrl ?? articleUrl
     const coverUrl = new URL(post.cover ?? siteConfig.defaultOgImage, siteConfig.origin).href
+    const coverAlt = `${post.title} cover image`
 
     return applySeo({
       title: `${post.title} — ${siteConfig.authorName}`,
@@ -66,6 +67,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
       ogTitle: post.title,
       ogUrl: articleUrl,
       ogImage: coverUrl,
+      ogImageAlt: coverAlt,
       twitterTitle: post.title,
     })
   }, [post])
