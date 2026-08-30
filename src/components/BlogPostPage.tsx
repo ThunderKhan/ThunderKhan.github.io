@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import siteConfig from '../config/site.json'
 import type { BlogBlock, BlogPost } from '../data/blogs'
 import { getHeadingEntries } from '../lib/blog-headings.js'
+import { getCodeLanguage } from '../lib/code-language.js'
 import { applySeo } from '../lib/seo'
 
 function renderBlock(block: BlogBlock, index: number, headingId?: string) {
@@ -38,15 +39,25 @@ function renderBlock(block: BlogBlock, index: number, headingId?: string) {
           {block.text}
         </blockquote>
       )
-    case 'code':
+    case 'code': {
+      const language = getCodeLanguage(block.language)
+
       return (
-        <pre
-          key={index}
-          className="my-7 overflow-x-auto rounded-xl border border-border bg-background/80 p-4 font-mono text-[13px] leading-6 text-foreground shadow-sm"
-        >
-          <code>{block.text}</code>
-        </pre>
+        <div key={index} className="relative my-7">
+          {language ? (
+            <span className="absolute right-3 top-2 z-10 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              {language.label}
+            </span>
+          ) : null}
+          <pre
+            data-language={language?.id}
+            className={`overflow-x-auto rounded-xl border border-border bg-background/80 p-4 font-mono text-[13px] leading-6 text-foreground shadow-sm ${language ? 'pt-8' : ''}`}
+          >
+            <code className={language ? `language-${language.id}` : undefined}>{block.text}</code>
+          </pre>
+        </div>
       )
+    }
     case 'list':
       return (
         <ul key={index} className="my-6 space-y-2 pl-5 text-[15px] leading-7 text-muted-foreground sm:text-base">
