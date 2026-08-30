@@ -53,6 +53,35 @@ function addArticlePublishedTime(html, date) {
   return html.replace('</head>', `    ${tag}\n  </head>`)
 }
 
+function addBlogPostingJsonLd(html, post, canonicalUrl, image) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    author: {
+      '@type': 'Person',
+      name: 'Ayan Khan',
+      url: SITE_URL,
+    },
+    image,
+    url: canonicalUrl,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    inLanguage: 'en',
+    ...(post.tags?.length ? { keywords: post.tags.join(', ') } : {}),
+  }
+  const json = JSON.stringify(schema).replaceAll('<', '\\u003c')
+  const tag = `<script type="application/ld+json" id="blog-posting-jsonld">${json}</script>`
+  const matcher = /<script(?=[^>]*\bid=["']blog-posting-jsonld["'])[^>]*>[\s\S]*?<\/script>/i
+
+  if (matcher.test(html)) return html.replace(matcher, tag)
+  return html.replace('</head>', `    ${tag}\n  </head>`)
+}
+
 function replaceRoot(html, content) {
   return html.replace(
     /<div id="root"><\/div>/i,
@@ -226,6 +255,7 @@ function renderBlogPost(template, post) {
   html = replaceMeta(html, 'name', 'twitter:image', image)
   html = replaceCanonical(html, canonicalUrl)
   html = addArticlePublishedTime(html, post.date)
+  html = addBlogPostingJsonLd(html, post, canonicalUrl, image)
   html = replaceRoot(html, renderStaticArticle(post))
 
   return html
@@ -274,7 +304,7 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'sitemap.xml'), renderSitemap(posts))
 
   console.log(
-    `Prerendered /blog and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'}; generated sitemap.xml.`,
+    `Prerendered /blog and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'} with BlogPosting JSON-LD; generated sitemap.xml.`,
   )
 }
 
