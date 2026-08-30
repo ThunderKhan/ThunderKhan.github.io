@@ -26,11 +26,21 @@ function currentPath() {
   return window.location.pathname.replace(/\/+$/, '') || '/'
 }
 
+function decodeBlogSlug(path: string) {
+  if (!path.startsWith('/blog/')) return null
+
+  try {
+    return decodeURIComponent(path.slice('/blog/'.length))
+  } catch {
+    return null
+  }
+}
+
 export default function App() {
   const { mode, selectMode } = useBackgroundMode()
   const path = currentPath()
   const isBlog = path === '/blog' || path.startsWith('/blog/')
-  const blogSlug = path.startsWith('/blog/') ? decodeURIComponent(path.slice('/blog/'.length)) : null
+  const blogSlug = decodeBlogSlug(path)
   const post = blogSlug ? getBlogPost(blogSlug) : undefined
   const isNotFound = (path.startsWith('/blog/') && !post) || (!isBlog && path !== '/')
 
