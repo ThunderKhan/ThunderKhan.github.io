@@ -12,7 +12,7 @@ import { FloatingDock } from './components/FloatingDock'
 import { BlogIndex } from './components/BlogIndex'
 import { BlogPostPage } from './components/BlogPostPage'
 import { NotFoundPage } from './components/NotFoundPage'
-import { getBlogPost } from './data/blogs'
+import { getBlogPost } from './data/blog-posts'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
 
 function currentPath() {
