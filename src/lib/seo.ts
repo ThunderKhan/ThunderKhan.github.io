@@ -7,9 +7,11 @@ export type SeoMeta = {
   ogDescription?: string
   ogUrl?: string
   ogImage?: string
+  ogImageAlt?: string
   twitterTitle?: string
   twitterDescription?: string
   twitterImage?: string
+  twitterImageAlt?: string
 }
 
 type Restore = () => void
@@ -68,9 +70,11 @@ export function applySeo({
   ogDescription = description,
   ogUrl = canonicalUrl,
   ogImage,
+  ogImageAlt,
   twitterTitle = ogTitle,
   twitterDescription = ogDescription,
   twitterImage = ogImage,
+  twitterImageAlt = ogImageAlt,
 }: SeoMeta): Restore {
   const previousTitle = document.title
   const restore = [
@@ -83,9 +87,11 @@ export function applySeo({
   ]
 
   if (ogImage) restore.push(setMeta('property', 'og:image', ogImage))
+  if (ogImageAlt) restore.push(setMeta('property', 'og:image:alt', ogImageAlt))
   if (twitterTitle) restore.push(setMeta('name', 'twitter:title', twitterTitle))
   if (twitterDescription) restore.push(setMeta('name', 'twitter:description', twitterDescription))
   if (twitterImage) restore.push(setMeta('name', 'twitter:image', twitterImage))
+  if (twitterImageAlt) restore.push(setMeta('name', 'twitter:image:alt', twitterImageAlt))
 
   document.title = title
 
