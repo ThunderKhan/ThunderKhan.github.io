@@ -1,6 +1,7 @@
 import { ArrowUpRight, Clock3 } from 'lucide-react'
 import { useEffect } from 'react'
 import { blogPosts } from '../data/blogs'
+import { applySeo } from '../lib/seo'
 
 const BLOG_TITLE = 'Writing — Ayan Khan'
 const BLOG_DESCRIPTION =
@@ -8,73 +9,17 @@ const BLOG_DESCRIPTION =
 const BLOG_URL = 'https://ayankhan.me/blog'
 const BLOG_IMAGE = 'https://ayankhan.me/og-image.png?v=3'
 
-function setMeta(selector: string, attribute: 'name' | 'property', key: string, content: string) {
-  let element = document.querySelector<HTMLMetaElement>(selector)
-  const created = !element
-  const previousContent = element?.content
-
-  if (!element) {
-    element = document.createElement('meta')
-    element.setAttribute(attribute, key)
-    document.head.appendChild(element)
-  }
-
-  element.content = content
-
-  return () => {
-    if (created) {
-      element?.remove()
-    } else if (element && previousContent !== undefined) {
-      element.content = previousContent
-    }
-  }
-}
-
-function setCanonical(href: string) {
-  let element = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-  const created = !element
-  const previousHref = element?.href
-
-  if (!element) {
-    element = document.createElement('link')
-    element.rel = 'canonical'
-    document.head.appendChild(element)
-  }
-
-  element.href = href
-
-  return () => {
-    if (created) {
-      element?.remove()
-    } else if (element && previousHref !== undefined) {
-      element.href = previousHref
-    }
-  }
-}
-
 export function BlogIndex() {
-  useEffect(() => {
-    const previousTitle = document.title
-    const restore = [
-      setMeta('meta[name="description"]', 'name', 'description', BLOG_DESCRIPTION),
-      setMeta('meta[property="og:type"]', 'property', 'og:type', 'website'),
-      setMeta('meta[property="og:title"]', 'property', 'og:title', BLOG_TITLE),
-      setMeta('meta[property="og:description"]', 'property', 'og:description', BLOG_DESCRIPTION),
-      setMeta('meta[property="og:url"]', 'property', 'og:url', BLOG_URL),
-      setMeta('meta[property="og:image"]', 'property', 'og:image', BLOG_IMAGE),
-      setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', BLOG_TITLE),
-      setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', BLOG_DESCRIPTION),
-      setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', BLOG_IMAGE),
-      setCanonical(BLOG_URL),
-    ]
-
-    document.title = BLOG_TITLE
-
-    return () => {
-      document.title = previousTitle
-      restore.reverse().forEach((restoreValue) => restoreValue())
-    }
-  }, [])
+  useEffect(
+    () =>
+      applySeo({
+        title: BLOG_TITLE,
+        description: BLOG_DESCRIPTION,
+        canonicalUrl: BLOG_URL,
+        ogImage: BLOG_IMAGE,
+      }),
+    [],
+  )
 
   return (
     <section className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-28 sm:px-6 sm:pt-32">
