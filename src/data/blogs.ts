@@ -5,6 +5,11 @@ export type BlogBlock =
   | { type: 'code'; language?: string; text: string }
   | { type: 'list'; items: string[] }
 
+export type BlogCrossPost = {
+  label: string
+  url: string
+}
+
 export type BlogPost = {
   slug: string
   title: string
@@ -13,7 +18,9 @@ export type BlogPost = {
   readingTime: string
   tags: string[]
   cover?: string
-  canonical?: string
+  canonicalUrl?: string
+  crossPosts?: BlogCrossPost[]
+  repositoryUrl?: string
   content: BlogBlock[]
 }
 
@@ -28,8 +35,19 @@ export const blogPosts: BlogPost[] = [
     tags: ['C++', 'Testing', 'DevTools', 'Hackathon'],
     cover:
       'https://raw.githubusercontent.com/ThunderKhan/diff2test/main/assets/diff2test-hero.png',
-    canonical:
-      'https://dev.to/thunderkhan/i-built-c-test-impact-analysis-with-zero-runtime-dependencies-4bo8',
+    canonicalUrl:
+      'https://ayankhan.me/blog/cpp-test-impact-analysis-zero-runtime-dependencies',
+    crossPosts: [
+      {
+        label: 'DEV Community',
+        url: 'https://dev.to/thunderkhan/i-built-c-test-impact-analysis-with-zero-runtime-dependencies-4bo8',
+      },
+      {
+        label: 'Hashnode',
+        url: 'https://thunder-khan.hashnode.dev/i-built-cpp-test-impact-analysis-with-zero-runtime-dependencies',
+      },
+    ],
+    repositoryUrl: 'https://github.com/ThunderKhan/diff2test',
     content: [
       {
         type: 'paragraph',
