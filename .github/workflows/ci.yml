@@ -28,6 +28,9 @@ jobs:
       - name: Lint source
         run: npm run lint
 
+      - name: Test blog utilities
+        run: npm test
+
       - name: Generate GitHub contribution data
         run: node scripts/fetch-github-contributions.mjs
         env:
@@ -35,3 +38,6 @@ jobs:
 
       - name: Build website
         run: npm run build
+
+      - name: Verify generated build
+        run: npm run test:build
