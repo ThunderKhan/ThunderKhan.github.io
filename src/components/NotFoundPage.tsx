@@ -1,4 +1,28 @@
-export function NotFoundPage() {
+import { useEffect } from 'react'
+import siteConfig from '../config/site.json'
+import { applySeo } from '../lib/seo'
+
+type NotFoundPageProps = {
+  path: string
+}
+
+export function NotFoundPage({ path }: NotFoundPageProps) {
+  useEffect(() => {
+    const canonicalUrl = new URL(path, `${siteConfig.origin}/`).href
+
+    return applySeo({
+      title: `Page not found — ${siteConfig.authorName}`,
+      description: 'The requested page does not exist on this portfolio, or it may have moved.',
+      canonicalUrl,
+      robots: 'noindex, follow',
+      ogTitle: `Page not found — ${siteConfig.authorName}`,
+      ogDescription: 'The requested page does not exist on this portfolio, or it may have moved.',
+      ogUrl: canonicalUrl,
+      twitterTitle: `Page not found — ${siteConfig.authorName}`,
+      twitterDescription: 'The requested page does not exist on this portfolio, or it may have moved.',
+    })
+  }, [path])
+
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-xl text-center">
