@@ -25,6 +25,15 @@ test('build emits a sitemap containing home, blog index, and article routes', as
   assert.ok(locations.some((location) => location.startsWith(`${BLOG_URL}/`)))
 })
 
+test('build keeps fonts self-hosted', async () => {
+  const html = await read('index.html')
+  const fontFiles = await fs.readdir(path.join(DIST_DIR, 'fonts'))
+
+  assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/)
+  assert.ok(fontFiles.includes('ibm-plex-mono-latin-400-normal.woff2'))
+  assert.ok(fontFiles.includes('ibm-plex-mono-latin-500-normal.woff2'))
+})
+
 test('blog index is emitted as a real static route with correct canonical metadata', async () => {
   const html = await read(path.join('blog', 'index.html'))
 
