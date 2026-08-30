@@ -7,6 +7,7 @@ import '@fontsource/manrope/latin-600.css'
 import '@fontsource/manrope/latin-700.css'
 import '@fontsource/manrope/latin-800.css'
 import App from './App'
+import './fonts.css'
 import './index.css'
 
 const rootElement = document.getElementById('root')!
