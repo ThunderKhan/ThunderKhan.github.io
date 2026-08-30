@@ -9,7 +9,7 @@ const SITE_URL = 'https://ayankhan.me'
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png?v=3`
 
 function escapeHtml(value) {
-  return value
+  return String(value)
     .replaceAll('&', '&amp;')
     .replaceAll('"', '&quot;')
     .replaceAll('<', '&lt;')
@@ -17,7 +17,7 @@ function escapeHtml(value) {
 }
 
 function escapeXml(value) {
-  return value
+  return String(value)
     .replaceAll('&', '&amp;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;')
@@ -53,25 +53,43 @@ function addArticlePublishedTime(html, date) {
   return html.replace('</head>', `    ${tag}\n  </head>`)
 }
 
-function getProperty(objectLiteral, name) {
-  for (const property of objectLiteral.properties) {
-    if (!ts.isPropertyAssignment(property)) continue
+function replaceRoot(html, content) {
+  return html.replace(
+    /<div id="root"><\/div>/i,
+    `<div id="root" data-prerendered="true">${content}</div>`,
+  )
+}
 
-    const propertyName = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)
-      ? property.name.text
-      : null
+function propertyName(node) {
+  return ts.isIdentifier(node) || ts.isStringLiteral(node) ? node.text : null
+}
 
-    if (propertyName !== name) continue
+function evaluateNode(node) {
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text
+  if (node.kind === ts.SyntaxKind.TrueKeyword) return true
+  if (node.kind === ts.SyntaxKind.FalseKeyword) return false
+  if (node.kind === ts.SyntaxKind.NullKeyword) return null
+  if (ts.isNumericLiteral(node)) return Number(node.text)
 
-    if (ts.isStringLiteral(property.initializer) || ts.isNoSubstitutionTemplateLiteral(property.initializer)) {
-      return property.initializer.text
+  if (ts.isArrayLiteralExpression(node)) {
+    return node.elements.map((element) => evaluateNode(element))
+  }
+
+  if (ts.isObjectLiteralExpression(node)) {
+    const value = {}
+    for (const property of node.properties) {
+      if (!ts.isPropertyAssignment(property)) continue
+      const name = propertyName(property.name)
+      if (!name) continue
+      value[name] = evaluateNode(property.initializer)
     }
+    return value
   }
 
   return undefined
 }
 
-async function readBlogMetadata() {
+async function readBlogPosts() {
   const sourceText = await fs.readFile(BLOG_SOURCE, 'utf8')
   const sourceFile = ts.createSourceFile(BLOG_SOURCE, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
 
@@ -88,26 +106,86 @@ async function readBlogMetadata() {
     }
   })
 
-  if (!postsArray) {
-    throw new Error('Could not find the blogPosts array in src/data/blogs.ts')
-  }
+  if (!postsArray) throw new Error('Could not find the blogPosts array in src/data/blogs.ts')
 
-  return postsArray.elements
-    .filter(ts.isObjectLiteralExpression)
-    .map((post) => ({
-      slug: getProperty(post, 'slug'),
-      title: getProperty(post, 'title'),
-      description: getProperty(post, 'description'),
-      date: getProperty(post, 'date'),
-      cover: getProperty(post, 'cover'),
-      canonicalUrl: getProperty(post, 'canonicalUrl'),
-    }))
-    .map((post, index) => {
-      if (!post.slug || !post.title || !post.description || !post.date) {
-        throw new Error(`Blog post ${index + 1} is missing slug, title, description, or date`)
-      }
-      return post
-    })
+  return postsArray.elements.map((node, index) => {
+    const post = evaluateNode(node)
+    if (!post?.slug || !post.title || !post.description || !post.date || !Array.isArray(post.content)) {
+      throw new Error(`Blog post ${index + 1} is missing required prerender data`)
+    }
+    return post
+  })
+}
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat('en', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${date}T00:00:00Z`))
+}
+
+function renderBlock(block) {
+  switch (block.type) {
+    case 'heading':
+      return `<h2 class="mt-14 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">${escapeHtml(block.text)}</h2>`
+    case 'quote':
+      return `<blockquote class="my-8 border-l-2 border-accent pl-5 text-lg font-medium leading-8 text-foreground sm:text-xl">${escapeHtml(block.text)}</blockquote>`
+    case 'code':
+      return `<pre class="my-7 overflow-x-auto rounded-xl border border-border bg-background/80 p-4 font-mono text-[13px] leading-6 text-foreground shadow-sm"><code>${escapeHtml(block.text)}</code></pre>`
+    case 'list':
+      return `<ul class="my-6 space-y-2 pl-5 text-[15px] leading-7 text-muted-foreground sm:text-base">${(block.items ?? [])
+        .map((item) => `<li class="list-disc pl-1 marker:text-accent">${escapeHtml(item)}</li>`)
+        .join('')}</ul>`
+    default:
+      return `<p class="mt-5 text-[15px] leading-7 text-muted-foreground sm:text-base sm:leading-8">${escapeHtml(block.text ?? '')}</p>`
+  }
+}
+
+function renderStaticArticle(post) {
+  const tags = (post.tags ?? [])
+    .map(
+      (tag) =>
+        `<span class="rounded-full border border-border bg-card/60 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">${escapeHtml(tag)}</span>`,
+    )
+    .join('')
+  const cover = post.cover
+    ? `<div class="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60"><img src="${escapeHtml(post.cover)}" alt="${escapeHtml(`${post.title} cover`)}" class="w-full object-cover" /></div>`
+    : ''
+  const body = post.content.map(renderBlock).join('')
+
+  const relatedLinks = [
+    post.repositoryUrl
+      ? `<a href="${escapeHtml(post.repositoryUrl)}" rel="noopener noreferrer">Repository</a>`
+      : '',
+    ...(post.crossPosts ?? []).map(
+      (crossPost) =>
+        `<a href="${escapeHtml(crossPost.url)}" rel="noopener noreferrer">${escapeHtml(crossPost.label)}</a>`,
+    ),
+  ].filter(Boolean)
+
+  const footer = relatedLinks.length
+    ? `<footer class="mx-auto mt-16 max-w-3xl border-t border-border pt-8"><p class="text-sm font-medium text-foreground">Links &amp; publication</p><div class="mt-3 flex flex-wrap gap-4 text-sm text-accent">${relatedLinks.join('')}</div></footer>`
+    : ''
+
+  return `<article data-static-blog-article="true" class="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
+    <div class="mx-auto max-w-3xl">
+      <a href="/blog" class="text-sm font-medium text-muted-foreground">← All writing</a>
+      <header class="mt-8">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground">
+          <time datetime="${escapeHtml(post.date)}">${escapeHtml(formatDate(post.date))}</time>
+          ${post.readingTime ? `<span>${escapeHtml(post.readingTime)}</span>` : ''}
+        </div>
+        <h1 class="mt-5 text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">${escapeHtml(post.title)}</h1>
+        <p class="mt-5 text-pretty text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">${escapeHtml(post.description)}</p>
+        <div class="mt-6 flex flex-wrap gap-2">${tags}</div>
+      </header>
+    </div>
+    ${cover}
+    <div class="mx-auto mt-12 max-w-3xl">${body}</div>
+    ${footer}
+  </article>`
 }
 
 function renderBlogIndex(template) {
@@ -148,15 +226,13 @@ function renderBlogPost(template, post) {
   html = replaceMeta(html, 'name', 'twitter:image', image)
   html = replaceCanonical(html, canonicalUrl)
   html = addArticlePublishedTime(html, post.date)
+  html = replaceRoot(html, renderStaticArticle(post))
 
   return html
 }
 
 function renderSitemap(posts) {
-  const latestPostDate = posts.reduce(
-    (latest, post) => (post.date > latest ? post.date : latest),
-    '',
-  )
+  const latestPostDate = posts.reduce((latest, post) => (post.date > latest ? post.date : latest), '')
   const entries = [
     { loc: `${SITE_URL}/` },
     { loc: `${SITE_URL}/blog`, lastmod: latestPostDate || undefined },
@@ -182,16 +258,12 @@ async function writeRoute(route, html) {
   const directory = path.join(DIST_DIR, relativePath)
   await fs.mkdir(directory, { recursive: true })
   await fs.writeFile(path.join(directory, 'index.html'), html)
-
-  // GitHub Pages also serves extensionless clean URLs from matching .html files.
-  // Keeping both forms avoids an unnecessary redirect while still supporting
-  // trailing-slash requests.
   await fs.writeFile(path.join(DIST_DIR, `${relativePath}.html`), html)
 }
 
 async function main() {
   const template = await fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf8')
-  const posts = await readBlogMetadata()
+  const posts = await readBlogPosts()
 
   await writeRoute('/blog', renderBlogIndex(template))
 
@@ -202,7 +274,7 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'sitemap.xml'), renderSitemap(posts))
 
   console.log(
-    `Prerendered /blog and ${posts.length} blog post route${posts.length === 1 ? '' : 's'}; generated sitemap.xml.`,
+    `Prerendered /blog and ${posts.length} full blog article route${posts.length === 1 ? '' : 's'}; generated sitemap.xml.`,
   )
 }
 
