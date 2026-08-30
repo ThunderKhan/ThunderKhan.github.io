@@ -56,7 +56,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
   useEffect(() => {
     const articleUrl = `${siteConfig.origin}${siteConfig.blog.path}/${encodeURIComponent(post.slug)}`
     const canonicalUrl = post.canonicalUrl ?? articleUrl
-    const coverUrl = post.cover ?? `${siteConfig.origin}${siteConfig.defaultOgImage}`
+    const coverUrl = new URL(post.cover ?? siteConfig.defaultOgImage, siteConfig.origin).href
 
     return applySeo({
       title: `${post.title} — ${siteConfig.authorName}`,
