@@ -41,3 +41,6 @@ jobs:
 
       - name: Verify generated build
         run: npm run test:build
+
+      - name: Check links
+        run: npm run check:links
