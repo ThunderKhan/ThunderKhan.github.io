@@ -1,6 +1,7 @@
 import { ArrowRight, Code2, Download, FileText, Github, Linkedin, Mail } from 'lucide-react'
 import { m, useReducedMotion } from 'motion/react'
 import { links, site } from '../data/portfolio'
+import { CinematicHero } from './CinematicHero'
 import { EASE } from './Reveal'
 import { SocialKey } from './SocialKey'
 import { HeroCodeTree } from './HeroCodeTree'
@@ -23,8 +24,17 @@ const heroContainer = {
 /**
  * Nearly full-viewport hero with a staggered entrance sequence:
  * availability pill → heading lines → intro → CTAs → social keys.
+ *
+ * The cinematic scroll experiment is opt-in via `?hero=cinematic`,
+ * so the existing homepage remains unchanged by default.
  */
 export function Hero() {
+  const cinematic =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('hero') === 'cinematic'
+
+  if (cinematic) return <CinematicHero />
+
   const reduced = useReducedMotion()
 
   const Wrapper = reduced ? 'div' : m.div
