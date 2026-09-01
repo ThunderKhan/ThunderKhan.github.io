@@ -15,25 +15,47 @@ export function CinematicHero() {
     offset: ['start start', 'end end'],
   })
 
-  const scale = useTransform(scrollYProgress, [0, 0.78, 1], [1.02, 1.14, 1.2])
-  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '-4%'])
-  const imageX = useTransform(scrollYProgress, [0, 1], ['0%', '-2.5%'])
+  // Camera move: push toward the workstation, then deliberately settle before the final scene.
+  const scale = useTransform(
+    scrollYProgress,
+    [0, 0.22, 0.58, 0.74, 0.9, 1],
+    [1.02, 1.045, 1.12, 1.14, 1.14, 1.18],
+  )
+  const imageY = useTransform(scrollYProgress, [0, 0.58, 0.82, 1], ['0%', '-2.8%', '-3.4%', '-4%'])
+  const imageX = useTransform(scrollYProgress, [0, 0.58, 0.82, 1], ['0%', '-1.8%', '-2.2%', '-2.5%'])
 
   // Opening identity gets a full beat before yielding to the proof-of-work scene.
   const introOpacity = useTransform(scrollYProgress, [0, 0.22, 0.34], [1, 1, 0])
   const introY = useTransform(scrollYProgress, [0, 0.34], ['0px', '-48px'])
 
-  // Keep the skills + terminal scene visible for a deliberately long stretch.
+  // Long proof-of-work scene.
   const skillOpacity = useTransform(scrollYProgress, [0.2, 0.31, 0.72, 0.82], [0, 1, 1, 0])
   const skillY = useTransform(scrollYProgress, [0.2, 0.36, 0.82], ['34px', '0px', '-28px'])
   const terminalOpacity = useTransform(scrollYProgress, [0.27, 0.38, 0.73, 0.83], [0, 1, 1, 0])
   const terminalY = useTransform(scrollYProgress, [0.27, 0.42, 0.83], ['24px', '0px', '-18px'])
 
-  // The final message now waits until the skill scene has had time to breathe.
+  // Skill chips reveal one at a time instead of appearing as a single block.
+  const skill1 = useTransform(scrollYProgress, [0.29, 0.335], [0, 1])
+  const skill2 = useTransform(scrollYProgress, [0.335, 0.38], [0, 1])
+  const skill3 = useTransform(scrollYProgress, [0.38, 0.425], [0, 1])
+  const skill4 = useTransform(scrollYProgress, [0.425, 0.47], [0, 1])
+  const skillProgress = [skill1, skill2, skill3, skill4]
+
+  // Terminal output is also scroll-written line by line.
+  const terminalLine1 = useTransform(scrollYProgress, [0.385, 0.43], [0, 1])
+  const terminalLine2 = useTransform(scrollYProgress, [0.43, 0.475], [0, 1])
+  const terminalLine3 = useTransform(scrollYProgress, [0.475, 0.52], [0, 1])
+  const terminalLine4 = useTransform(scrollYProgress, [0.52, 0.565], [0, 1])
+  const terminalLineProgress = [terminalLine1, terminalLine2, terminalLine3, terminalLine4]
+
+  // A tiny breathing/settling beat once the proof scene is fully assembled.
+  const proofScale = useTransform(scrollYProgress, [0.55, 0.61, 0.69], [0.985, 1, 1])
+
+  // Final message waits until the proof scene has had time to breathe.
   const secondOpacity = useTransform(scrollYProgress, [0.75, 0.84, 0.94, 0.985], [0, 1, 1, 0])
   const secondY = useTransform(scrollYProgress, [0.75, 0.86, 0.985], ['42px', '0px', '-42px'])
 
-  const veilOpacity = useTransform(scrollYProgress, [0, 0.76, 1], [0.24, 0.42, 0.76])
+  const veilOpacity = useTransform(scrollYProgress, [0, 0.31, 0.72, 1], [0.24, 0.3, 0.42, 0.76])
   const exitOpacity = useTransform(scrollYProgress, [0.92, 1], [1, 0.16])
 
   const imageStyle = reducedMotion
@@ -126,23 +148,32 @@ export function CinematicHero() {
 
           <m.div
             className="absolute inset-x-5 top-[52%] sm:inset-x-8 lg:inset-x-12"
-            style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY }}
+            style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY, scale: proofScale }}
           >
             <div className="flex flex-wrap gap-2.5 sm:gap-3">
-              {skillSignals.map((signal) => (
-                <span
+              {skillSignals.map((signal, index) => (
+                <m.span
                   key={signal}
+                  style={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          opacity: skillProgress[index],
+                          y: useTransform(skillProgress[index], [0, 1], [14, 0]),
+                          scale: useTransform(skillProgress[index], [0, 1], [0.94, 1]),
+                        }
+                  }
                   className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-mono text-[11px] tracking-[0.18em] text-white/85 uppercase backdrop-blur-xl sm:text-xs"
                 >
                   {signal}
-                </span>
+                </m.span>
               ))}
             </div>
           </m.div>
 
           <m.div
             className="absolute right-5 top-[58%] w-[min(92vw,430px)] rounded-2xl border border-white/15 bg-black/35 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:right-8 lg:right-12"
-            style={reducedMotion ? { opacity: 1 } : { opacity: terminalOpacity, y: terminalY }}
+            style={reducedMotion ? { opacity: 1 } : { opacity: terminalOpacity, y: terminalY, scale: proofScale }}
           >
             <div className="mb-3 flex items-center gap-2">
               <span className="size-2 rounded-full bg-white/45" />
@@ -151,10 +182,27 @@ export function CinematicHero() {
               <span className="ml-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">ayan@portfolio</span>
             </div>
             <div className="space-y-1 font-mono text-xs leading-relaxed text-white/72 sm:text-sm">
-              <p><span className="text-violet-300">$</span> build --curious --public</p>
-              <p className="text-white/50">stack: react · typescript · c++ · python</p>
-              <p className="text-white/50">mode: prototype → test → refine</p>
-              <p><span className="text-violet-300">✓</span> shipping proof, not just claims</p>
+              {[
+                <><span className="text-violet-300">$</span> build --curious --public</>,
+                <>stack: react · typescript · c++ · python</>,
+                <>mode: prototype → test → refine</>,
+                <><span className="text-violet-300">✓</span> shipping proof, not just claims <span className="ml-1 inline-block h-[1em] w-[0.45em] translate-y-[2px] bg-violet-300/80 animate-pulse" /></>,
+              ].map((line, index) => (
+                <m.p
+                  key={index}
+                  className={index === 0 || index === 3 ? '' : 'text-white/50'}
+                  style={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          opacity: terminalLineProgress[index],
+                          x: useTransform(terminalLineProgress[index], [0, 1], [-8, 0]),
+                        }
+                  }
+                >
+                  {line}
+                </m.p>
+              ))}
             </div>
           </m.div>
 
