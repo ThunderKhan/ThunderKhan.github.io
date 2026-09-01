@@ -1,42 +1,28 @@
 import { ArrowDown, ArrowRight, Download } from 'lucide-react'
 import { m, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { site } from '../data/portfolio'
 
 const WORKSPACE_IMAGE = '/experimental/cinematic-workspace.webp'
-const SINGULARITY_DATA = '/experimental/code-singularity.webp.b64.txt'
+const SINGULARITY_IMAGE = '/experimental/code-singularity-landscape.png'
 
 const skillSignals = ['FULL STACK', 'C++ SYSTEMS', 'DEVELOPER TOOLS', 'OPEN SOURCE']
 
 export function CinematicHero() {
   const sectionRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
-  const [singularityImage, setSingularityImage] = useState<string>()
-
-  useEffect(() => {
-    let cancelled = false
-    fetch(SINGULARITY_DATA)
-      .then((response) => response.text())
-      .then((data) => {
-        if (!cancelled) setSingularityImage(`data:image/webp;base64,${data.trim()}`)
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
 
-  // Scene one keeps the portrait artwork intact instead of stretching it across a landscape viewport.
+  // Scene one now uses the native landscape composition as a true full-bleed frame.
   const singularityOpacity = useTransform(scrollYProgress, [0, 0.2, 0.31, 0.38], [1, 1, 0.72, 0])
-  const singularityScale = useTransform(scrollYProgress, [0, 0.38], [0.96, 1.1])
-  const singularityX = useTransform(scrollYProgress, [0, 0.38], ['5%', '0%'])
-  const singularityY = useTransform(scrollYProgress, [0, 0.38], ['0%', '-2%'])
-  const singularityGlow = useTransform(scrollYProgress, [0, 0.16, 0.32], [0.14, 0.27, 0.08])
+  const singularityScale = useTransform(scrollYProgress, [0, 0.38], [1.02, 1.16])
+  const singularityX = useTransform(scrollYProgress, [0, 0.38], ['0%', '-2%'])
+  const singularityY = useTransform(scrollYProgress, [0, 0.38], ['0%', '-1%'])
+  const singularityGlow = useTransform(scrollYProgress, [0, 0.16, 0.32], [0.12, 0.24, 0.07])
 
   const workspaceOpacity = useTransform(scrollYProgress, [0.27, 0.39, 0.92, 1], [0, 1, 1, 0.16])
   const workspaceScale = useTransform(
@@ -98,28 +84,28 @@ export function CinematicHero() {
   return (
     <section ref={sectionRef} id="hero" aria-label="Introduction" className="relative h-[500svh] bg-black">
       <div className="sticky top-0 h-svh overflow-hidden bg-black">
-        {singularityImage && (
-          <m.div
-            className="absolute inset-y-0 right-0 w-full sm:w-[76%] lg:w-[58%]"
-            style={reducedMotion ? { opacity: 1 } : { opacity: singularityOpacity }}
-          >
-            <m.img
-              src={singularityImage}
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-              className="absolute inset-0 h-full w-full select-none object-contain object-right"
-              style={reducedMotion ? undefined : { scale: singularityScale, x: singularityX, y: singularityY }}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black via-black/25 to-transparent" aria-hidden="true" />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/25" aria-hidden="true" />
-          </m.div>
-        )}
+        <m.img
+          src={SINGULARITY_IMAGE}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 h-full w-full select-none object-cover object-[60%_50%] sm:object-[58%_50%] lg:object-[56%_50%]"
+          style={
+            reducedMotion
+              ? { opacity: 1 }
+              : {
+                  opacity: singularityOpacity,
+                  scale: singularityScale,
+                  x: singularityX,
+                  y: singularityY,
+                }
+          }
+        />
 
         <m.div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 w-[70%] bg-[radial-gradient(circle_at_52%_48%,rgba(255,126,36,0.24),transparent_18%)] mix-blend-screen"
-          style={reducedMotion ? { opacity: 0.12 } : { opacity: singularityGlow }}
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_43%_46%,rgba(255,138,63,0.2),transparent_16%)] mix-blend-screen"
+          style={reducedMotion ? { opacity: 0.1 } : { opacity: singularityGlow }}
         />
 
         <m.img
@@ -128,12 +114,30 @@ export function CinematicHero() {
           aria-hidden="true"
           draggable={false}
           className="absolute inset-0 h-full w-full select-none object-cover object-[52%_50%] sm:object-[50%_50%] lg:object-[50%_48%]"
-          style={reducedMotion ? { opacity: 1 } : { opacity: workspaceOpacity, scale: workspaceScale, y: workspaceY, x: workspaceX }}
+          style={
+            reducedMotion
+              ? { opacity: 1 }
+              : {
+                  opacity: workspaceOpacity,
+                  scale: workspaceScale,
+                  y: workspaceY,
+                  x: workspaceX,
+                }
+          }
         />
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/82 via-black/28 to-black/5" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/82 via-transparent to-black/30" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.72)]" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/82 via-black/28 to-black/5"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/82 via-transparent to-black/30"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.72)]"
+          aria-hidden="true"
+        />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.11] mix-blend-soft-light"
           aria-hidden="true"
@@ -143,53 +147,124 @@ export function CinematicHero() {
             backgroundSize: '4px 4px, 5px 5px',
           }}
         />
-        <m.div className="pointer-events-none absolute inset-0 bg-black" aria-hidden="true" style={reducedMotion ? { opacity: 0.3 } : { opacity: veilOpacity }} />
+        <m.div
+          className="pointer-events-none absolute inset-0 bg-black"
+          aria-hidden="true"
+          style={reducedMotion ? { opacity: 0.3 } : { opacity: veilOpacity }}
+        />
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8 lg:px-12">
           <m.div
             className="absolute top-[22%] left-5 max-w-[44rem] sm:left-8 lg:top-[24%] lg:left-12 lg:max-w-[42rem]"
             style={reducedMotion ? undefined : { opacity: introOpacity, y: introY, scale: introScale }}
           >
-            <p className="mb-5 font-mono text-xs tracking-[0.28em] text-white/70 uppercase sm:text-sm">{site.tagline}</p>
+            <p className="mb-5 font-mono text-xs tracking-[0.28em] text-white/70 uppercase sm:text-sm">
+              {site.tagline}
+            </p>
             <h1 className="text-5xl leading-[0.96] font-bold tracking-[-0.055em] text-white text-balance sm:text-6xl lg:text-7xl">
               Hi, I&apos;m <span className="text-violet-300">{site.name}.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/86 text-pretty drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:text-xl lg:text-2xl">{site.headline}</p>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/86 text-pretty drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:text-xl lg:text-2xl">
+              {site.headline}
+            </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <a href="#projects" className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)]">Enter my work <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" /></a>
-              <a href={site.resume} download className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/20 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35"><Download size={15} aria-hidden="true" /> Résumé</a>
+              <a
+                href="#projects"
+                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)]"
+              >
+                Enter my work
+                <ArrowRight
+                  size={16}
+                  aria-hidden="true"
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </a>
+              <a
+                href={site.resume}
+                download
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/20 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35"
+              >
+                <Download size={15} aria-hidden="true" />
+                Résumé
+              </a>
             </div>
           </m.div>
 
-          <m.div className="absolute inset-x-5 top-[52%] sm:inset-x-8 lg:inset-x-12" style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY, scale: proofScale }}>
+          <m.div
+            className="absolute inset-x-5 top-[52%] sm:inset-x-8 lg:inset-x-12"
+            style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY, scale: proofScale }}
+          >
             <div className="flex flex-wrap gap-2.5 sm:gap-3">
               {skillSignals.map((signal, index) => (
-                <m.span key={signal} style={reducedMotion ? undefined : skillStyles[index]} className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-mono text-[11px] tracking-[0.18em] text-white/85 uppercase backdrop-blur-xl sm:text-xs">{signal}</m.span>
+                <m.span
+                  key={signal}
+                  style={reducedMotion ? undefined : skillStyles[index]}
+                  className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-mono text-[11px] tracking-[0.18em] text-white/85 uppercase backdrop-blur-xl sm:text-xs"
+                >
+                  {signal}
+                </m.span>
               ))}
             </div>
           </m.div>
 
-          <m.div className="absolute right-5 top-[58%] w-[min(92vw,430px)] rounded-2xl border border-white/15 bg-black/35 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:right-8 lg:right-12" style={reducedMotion ? { opacity: 1 } : { opacity: terminalOpacity, y: terminalY, scale: proofScale }}>
-            <div className="mb-3 flex items-center gap-2"><span className="size-2 rounded-full bg-white/45" /><span className="size-2 rounded-full bg-white/30" /><span className="size-2 rounded-full bg-white/20" /><span className="ml-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">ayan@portfolio</span></div>
+          <m.div
+            className="absolute right-5 top-[58%] w-[min(92vw,430px)] rounded-2xl border border-white/15 bg-black/35 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:right-8 lg:right-12"
+            style={
+              reducedMotion
+                ? { opacity: 1 }
+                : { opacity: terminalOpacity, y: terminalY, scale: proofScale }
+            }
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <span className="size-2 rounded-full bg-white/45" />
+              <span className="size-2 rounded-full bg-white/30" />
+              <span className="size-2 rounded-full bg-white/20" />
+              <span className="ml-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
+                ayan@portfolio
+              </span>
+            </div>
             <div className="space-y-1 font-mono text-xs leading-relaxed text-white/72 sm:text-sm">
               {[
-                <><span className="text-violet-300">$</span> build --curious --public</>,
+                <>
+                  <span className="text-violet-300">$</span> build --curious --public
+                </>,
                 <>stack: react · typescript · c++ · python</>,
                 <>mode: prototype → test → refine</>,
-                <><span className="text-violet-300">✓</span> shipping proof, not just claims <span className="ml-1 inline-block h-[1em] w-[0.45em] translate-y-[2px] bg-violet-300/80 animate-pulse" /></>,
+                <>
+                  <span className="text-violet-300">✓</span> shipping proof, not just claims{' '}
+                  <span className="ml-1 inline-block h-[1em] w-[0.45em] translate-y-[2px] bg-violet-300/80 animate-pulse" />
+                </>,
               ].map((line, index) => (
-                <m.p key={index} className={index === 0 || index === 3 ? '' : 'text-white/50'} style={reducedMotion ? undefined : terminalStyles[index]}>{line}</m.p>
+                <m.p
+                  key={index}
+                  className={index === 0 || index === 3 ? '' : 'text-white/50'}
+                  style={reducedMotion ? undefined : terminalStyles[index]}
+                >
+                  {line}
+                </m.p>
               ))}
             </div>
           </m.div>
 
-          <m.div className="absolute right-5 bottom-[15%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]" style={reducedMotion ? { opacity: 1 } : { opacity: secondOpacity, y: secondY }}>
-            <p className="font-mono text-xs tracking-[0.24em] text-cyan-100/75 uppercase sm:text-sm">Build · test · learn · repeat</p>
-            <p className="mt-4 text-3xl leading-tight font-semibold tracking-[-0.035em] text-white text-balance drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-5xl">From ideas to systems you can actually use.</p>
-            <p className="mt-5 ml-auto max-w-lg text-sm leading-relaxed text-white/72 sm:text-base">Full-stack applications, C++ systems, developer tools, open source, and experiments that make me question my assumptions.</p>
+          <m.div
+            className="absolute right-5 bottom-[15%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]"
+            style={reducedMotion ? { opacity: 1 } : { opacity: secondOpacity, y: secondY }}
+          >
+            <p className="font-mono text-xs tracking-[0.24em] text-cyan-100/75 uppercase sm:text-sm">
+              Build · test · learn · repeat
+            </p>
+            <p className="mt-4 text-3xl leading-tight font-semibold tracking-[-0.035em] text-white text-balance drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-5xl">
+              From ideas to systems you can actually use.
+            </p>
+            <p className="mt-5 ml-auto max-w-lg text-sm leading-relaxed text-white/72 sm:text-base">
+              Full-stack applications, C++ systems, developer tools, open source, and experiments that make me question my assumptions.
+            </p>
           </m.div>
 
-          <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/60"><span className="font-mono text-[10px] tracking-[0.2em] uppercase">Scroll to enter</span><ArrowDown size={15} aria-hidden="true" className="animate-bounce" /></div>
+          <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/60">
+            <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Scroll to enter</span>
+            <ArrowDown size={15} aria-hidden="true" className="animate-bounce" />
+          </div>
         </div>
       </div>
     </section>
