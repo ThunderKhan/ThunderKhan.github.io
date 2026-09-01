@@ -13,9 +13,9 @@ type NavigationProps = {
 }
 
 /**
- * Minimal transparent top utility bar: monogram, writing, résumé, theme toggle,
- * ambient-background selector, and command palette. Gains a blurred surface after scroll.
- * Section navigation lives in the FloatingDock on the portfolio home page.
+ * Floating, centered utility shell inspired by desktop-panel / Linux-rice UI.
+ * It stays visually detached from the viewport edges while preserving the
+ * existing writing, résumé, theme, background, and command-palette controls.
  */
 export function Navigation({
   backgroundMode,
@@ -34,46 +34,44 @@ export function Navigation({
   }, [])
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled
-          ? 'border-b border-border bg-background/70 backdrop-blur-md'
-          : 'border-b border-transparent bg-transparent'
-      }`}
-    >
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
       <nav
         aria-label="Utility"
-        className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6"
+        className={`pointer-events-auto mx-auto flex h-14 w-full max-w-6xl items-center justify-between rounded-[1.75rem] border px-3 shadow-[0_14px_45px_rgba(0,0,0,0.22)] transition-[background-color,border-color,box-shadow,transform] duration-300 sm:px-4 ${
+          scrolled
+            ? 'border-border/90 bg-background/78 shadow-[0_16px_50px_rgba(0,0,0,0.3)] backdrop-blur-2xl'
+            : 'border-white/10 bg-background/38 backdrop-blur-xl'
+        }`}
       >
         <a
           href={isBlog ? '/' : '#hero'}
-          className="font-mono text-sm font-medium tracking-widest text-foreground transition-colors hover:text-accent"
+          className="flex h-9 min-w-9 items-center justify-center rounded-full px-2 font-mono text-sm font-semibold tracking-widest text-foreground transition-colors hover:bg-card/70 hover:text-accent"
           aria-label={`${site.name} — ${isBlog ? 'portfolio home' : 'back to top'}`}
         >
           {site.initials}
         </a>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <button
             type="button"
             onClick={onOpenCommandPalette}
             aria-label="Open command palette"
             title="Command palette (Ctrl/⌘ K)"
-            className="group flex h-9 items-center gap-1.5 rounded-full border border-border bg-card/60 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent hover:text-foreground sm:px-3"
+            className="group flex h-9 items-center gap-1.5 rounded-full border border-border/70 bg-card/45 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/60 hover:bg-card/70 hover:text-foreground sm:px-3"
           >
             <Command size={13} aria-hidden="true" />
             <span className="hidden lg:inline">Command</span>
-            <kbd className="hidden rounded border border-border bg-background/70 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground sm:inline">
+            <kbd className="hidden rounded border border-border/70 bg-background/55 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground sm:inline">
               ⌘K
             </kbd>
           </button>
 
           <a
             href="/blog"
-            className={`flex h-9 items-center gap-1.5 rounded-full border bg-card/60 px-3 text-xs font-medium transition-colors ${
+            className={`flex h-9 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium transition-colors sm:px-3 ${
               isBlog
-                ? 'border-accent/50 text-accent'
-                : 'border-border text-foreground hover:border-accent hover:text-accent'
+                ? 'border-accent/50 bg-accent/10 text-accent'
+                : 'border-border/70 bg-card/45 text-foreground hover:border-accent/60 hover:bg-card/70 hover:text-accent'
             }`}
           >
             <BookOpenText size={13} aria-hidden="true" />
@@ -85,7 +83,7 @@ export function Navigation({
             href={site.resume}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-9 items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 text-xs font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="flex h-9 items-center gap-1.5 rounded-full border border-border/70 bg-card/45 px-2.5 text-xs font-medium text-foreground transition-colors hover:border-accent/60 hover:bg-card/70 hover:text-accent sm:px-3"
           >
             <FileText size={13} aria-hidden="true" />
             <span className="hidden sm:inline">Résumé</span>
@@ -96,7 +94,7 @@ export function Navigation({
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/60 text-muted-foreground transition-colors hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-card/45 text-muted-foreground transition-colors hover:border-accent/60 hover:bg-card/70 hover:text-foreground"
           >
             {theme === 'dark' ? (
               <Sun size={15} aria-hidden="true" />
