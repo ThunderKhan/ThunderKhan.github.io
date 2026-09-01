@@ -29,13 +29,12 @@ const heroContainer = {
  * so the existing homepage remains unchanged by default.
  */
 export function Hero() {
+  const reduced = useReducedMotion()
   const cinematic =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('hero') === 'cinematic'
 
   if (cinematic) return <CinematicHero />
-
-  const reduced = useReducedMotion()
 
   const Wrapper = reduced ? 'div' : m.div
   const Item = reduced ? 'div' : m.div
