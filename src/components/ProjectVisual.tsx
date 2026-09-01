@@ -1,27 +1,18 @@
 import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronRight,
-  Filter,
-  History,
-  Lock,
-  Pencil,
-  Repeat,
-  Search,
+  Activity,
+  Bot,
+  BrainCircuit,
+  CheckCircle2,
+  FileCheck2,
+  GitBranch,
+  Network,
   ShieldCheck,
+  Stethoscope,
   Terminal,
-  Trash2,
-  Users,
+  ThermometerSun,
 } from 'lucide-react'
 import type { ProjectVisual as ProjectVisualKind } from '../data/portfolio'
 
-/**
- * Code-native conceptual illustrations for the featured projects.
- * Pure JSX + Tailwind — no images, canvas, or extra dependencies.
- * Marked aria-hidden by the caller: the adjacent copy carries the meaning.
- */
-
-/** Shared frame: keeps every visual on the same panel treatment. */
 function VisualFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex aspect-8/5 w-full items-center justify-center overflow-hidden bg-muted p-4 sm:p-6 md:absolute md:inset-0 md:aspect-auto md:h-full">
@@ -30,252 +21,147 @@ function VisualFrame({ children }: { children: React.ReactNode }) {
   )
 }
 
-/* ----------------------------------------------------------------
-   Tab Jumper — stylized browser window with a visit trail
------------------------------------------------------------------ */
-function TabJumperVisual() {
-  const tabs = [
-    { label: 'Docs', order: 1 },
-    { label: 'GitHub', order: 3 },
-    { label: 'Stack Overflow', order: 2 },
-  ]
-
+function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <VisualFrame>
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card shadow-sm transition-transform duration-300 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-        {/* Window chrome */}
-        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-          <span className="flex gap-1.5">
-            <span className="size-2 rounded-full bg-coral/70" />
-            <span className="size-2 rounded-full bg-amber/70" />
-            <span className="size-2 rounded-full bg-accent/70" />
-          </span>
-          {/* Tabs with visit-order badges */}
-          <div className="ml-1 flex min-w-0 flex-1 gap-1">
-            {tabs.map((tab) => (
-              <span
-                key={tab.label}
-                className={`relative flex min-w-0 items-center gap-1 truncate rounded-t-md border border-b-0 px-2 py-1 text-[10px] leading-none ${
-                  tab.order === 3
-                    ? 'border-accent/40 bg-accent/10 font-medium text-accent'
-                    : 'border-border bg-muted text-muted-foreground'
-                }`}
-              >
-                <span className="truncate">{tab.label}</span>
-                <span className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-[8px] text-accent">
-                  {tab.order}
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Visit trail */}
-        <div className="flex items-center justify-center gap-1 px-4 pt-4 font-mono text-[10px] text-muted-foreground">
-          <span className="rounded border border-border bg-muted px-1.5 py-0.5">Docs</span>
-          <ChevronRight size={10} className="text-accent" />
-          <span className="rounded border border-border bg-muted px-1.5 py-0.5">Stack Overflow</span>
-          <ChevronRight size={10} className="text-accent" />
-          <span className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-accent">
-            GitHub
-          </span>
-        </div>
-
-        {/* Navigation + shortcut */}
-        <div className="flex flex-wrap items-center justify-center gap-2 px-4 py-3">
-          <span className="flex items-center gap-1 rounded-md border border-border bg-muted p-1.5 text-foreground">
-            <ArrowLeft size={12} />
-            <ArrowRight size={12} className="text-muted-foreground" />
-          </span>
-          <span className="rounded-md border border-border bg-muted px-2 py-1.5 font-mono text-[10px] text-foreground shadow-[0_2px_0_0_var(--color-border)]">
-            Ctrl ⇧ Space
-          </span>
-          <span className="flex items-center gap-1 rounded-full border border-coral/30 bg-coral/10 px-2 py-1 text-[9px] font-medium text-coral">
-            <Repeat size={9} />
-            Recent pair
-          </span>
-        </div>
-
-        {/* Mode + privacy footer */}
-        <div className="flex items-center justify-between border-t border-border px-3 py-2 text-[9px] text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <History size={10} className="text-accent" />
-            History mode
-          </span>
-          <span className="flex items-center gap-1">
-            <ShieldCheck size={10} className="text-accent" />
-            No page data read
-          </span>
-        </div>
-      </div>
-    </VisualFrame>
+    <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4 shadow-sm transition-transform duration-300 ease-out group-hover:-translate-y-1 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+      {children}
+    </div>
   )
 }
 
-/* ----------------------------------------------------------------
-   Employee Management System — abstract dashboard
------------------------------------------------------------------ */
-function EmployeeDashboardVisual() {
-  const stats = [
-    { label: 'Total', tone: 'text-accent' },
-    { label: 'Active', tone: 'text-coral' },
-    { label: 'Inactive', tone: 'text-muted-foreground' },
-  ]
-
+function TestImpactVisual() {
   return (
     <VisualFrame>
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card shadow-sm transition-transform duration-300 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-        {/* Header with lock */}
-        <div className="flex items-center justify-between border-b border-border px-3 py-2">
-          <span className="flex items-center gap-1.5 text-[10px] font-medium text-foreground">
-            <Users size={11} className="text-accent" />
-            Dashboard
+      <Panel>
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <span className="flex items-center gap-2 font-mono text-xs text-foreground">
+            <Terminal size={14} className="text-accent" /> diff2test analyze
           </span>
-          <span className="flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[9px] text-accent">
-            <Lock size={9} />
-            JWT protected
-          </span>
+          <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[10px] text-accent">C++20</span>
         </div>
-
-        <div className="flex flex-col gap-3 p-3">
-          {/* Stat tiles */}
-          <div className="grid grid-cols-3 gap-2">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-border bg-muted px-2 py-1.5">
-                <span className="block text-[9px] text-muted-foreground">{stat.label}</span>
-                <span className={`mt-1 block h-1.5 w-6 rounded-full bg-current ${stat.tone}`} />
-              </div>
-            ))}
-          </div>
-
-          {/* Search + filter chip */}
-          <div className="flex items-center gap-2">
-            <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1.5 text-muted-foreground">
-              <Search size={10} />
-              <span className="h-1 w-16 rounded-full bg-border" />
-            </span>
-            <span className="flex items-center gap-1 rounded-full border border-coral/30 bg-coral/10 px-2 py-1 text-[9px] font-medium text-coral">
-              <Filter size={9} />
-              Department
-            </span>
-          </div>
-
-          {/* Anonymous employee rows */}
-          <div className="flex flex-col gap-1.5">
-            {[0, 1, 2].map((row) => (
-              <div
-                key={row}
-                className="flex items-center gap-2 rounded-md border border-border bg-muted px-2 py-1.5"
-              >
-                <span className="size-4 shrink-0 rounded-full bg-accent/25" />
-                <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="h-1 w-20 rounded-full bg-border" />
-                  <span className="h-1 w-12 rounded-full bg-border/70" />
-                </span>
-                <span
-                  className={`size-1.5 shrink-0 rounded-full ${row === 2 ? 'bg-muted-foreground/50' : 'bg-accent'}`}
-                />
-                <Pencil size={10} className="shrink-0 text-muted-foreground" />
-                <Trash2 size={10} className="shrink-0 text-coral/80" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </VisualFrame>
-  )
-}
-
-/* ----------------------------------------------------------------
-   Markov Text Generator — token chain + sampled path + terminal
------------------------------------------------------------------ */
-function MarkovChainVisual() {
-  return (
-    <VisualFrame>
-      <div className="flex w-full max-w-sm flex-col gap-3 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-        {/* Input tokens */}
-        <div className="flex items-center gap-1.5 font-mono text-[10px]">
-          <span className="text-muted-foreground">input:</span>
-          {['the', 'quick', 'brown'].map((token) => (
-            <span
-              key={token}
-              className="rounded border border-border bg-card px-1.5 py-0.5 text-foreground"
-            >
-              {token}
-            </span>
+        <div className="mt-4 flex items-center justify-between gap-2 font-mono text-[10px] text-muted-foreground">
+          {['header.hpp', 'target', 'AlphaTest'].map((item, index) => (
+            <div key={item} className="flex items-center gap-2">
+              <span className={`rounded-lg border px-2 py-1.5 ${index === 2 ? 'border-accent/40 bg-accent/10 text-accent' : 'border-border bg-muted'}`}>{item}</span>
+              {index < 2 && <GitBranch size={12} className="text-coral" />}
+            </div>
           ))}
-          <span className="text-muted-foreground">…</span>
         </div>
+        <div className="mt-4 rounded-xl border border-border bg-muted p-3 font-mono text-[10px] leading-relaxed text-muted-foreground">
+          <p><span className="text-accent">STATUS:</span> SUBSET_SELECTED</p>
+          <p className="mt-1">evidence complete → narrow safely</p>
+          <p>evidence unsafe → full suite</p>
+        </div>
+      </Panel>
+    </VisualFrame>
+  )
+}
 
-        {/* State graph: nodes + branching transitions */}
-        <div className="relative rounded-xl border border-border bg-card p-3">
-          <svg viewBox="0 0 280 96" className="w-full" fill="none">
-            {/* Transition edges — one highlighted sampled path */}
-            <path
-              d="M46 48 C 80 48, 90 22, 122 22"
-              className="stroke-border"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M46 48 C 80 48, 90 74, 122 74"
-              className="stroke-border"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M158 22 C 190 22, 200 48, 230 48"
-              className="stroke-border"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M158 74 C 190 74, 200 48, 230 48"
-              className="stroke-coral"
-              strokeWidth="2"
-            />
-            <path d="M46 48 C 80 48, 90 74, 122 74" className="stroke-coral" strokeWidth="2" />
+function WebMcpVisual() {
+  return (
+    <VisualFrame>
+      <Panel>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-sm font-semibold text-foreground"><ShieldCheck size={16} className="text-accent" /> webclerk</span>
+          <span className="font-mono text-[10px] text-muted-foreground">9 WebMCP tools</span>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          {['inspect', 'evidence', 'preflight', 'fill', 'conflicts', 'state'].map((tool) => (
+            <span key={tool} className="rounded-lg border border-border bg-muted px-2 py-2 text-center font-mono text-[9px] text-muted-foreground">{tool}</span>
+          ))}
+        </div>
+        <div className="mt-4 space-y-2 text-[10px]">
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">verified completion</span><span className="font-mono text-accent">70% → 96%</span></div>
+          <div className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 size={12} className="text-accent" /> evidence-backed edits only</div>
+          <div className="flex items-center gap-2 text-muted-foreground"><FileCheck2 size={12} className="text-coral" /> human keeps final authority</div>
+        </div>
+      </Panel>
+    </VisualFrame>
+  )
+}
 
-            {/* Nodes */}
-            <circle cx="30" cy="48" r="14" className="fill-accent/15 stroke-accent" strokeWidth="1.5" />
-            <text x="30" y="52" textAnchor="middle" className="fill-accent font-mono text-[9px]">
-              fox
-            </text>
-            <circle cx="140" cy="22" r="14" className="fill-muted stroke-border" strokeWidth="1.5" />
-            <text x="140" y="26" textAnchor="middle" className="fill-muted-foreground font-mono text-[9px]">
-              ran
-            </text>
-            <circle cx="140" cy="74" r="14" className="fill-coral/15 stroke-coral" strokeWidth="1.5" />
-            <text x="140" y="78" textAnchor="middle" className="fill-coral font-mono text-[9px]">
-              jumps
-            </text>
-            <circle cx="246" cy="48" r="14" className="fill-coral/15 stroke-coral" strokeWidth="1.5" />
-            <text x="246" y="52" textAnchor="middle" className="fill-coral font-mono text-[9px]">
-              over
-            </text>
+function FraudGraphVisual() {
+  const nodes = [
+    ['C1', 'left-[12%] top-[44%]'],
+    ['D7', 'left-[39%] top-[20%]'],
+    ['IP4', 'left-[42%] top-[62%]'],
+    ['C2', 'right-[12%] top-[28%]'],
+    ['M9', 'right-[10%] top-[66%]'],
+  ]
+  return (
+    <VisualFrame>
+      <Panel>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-semibold"><Network size={16} className="text-accent" /> payment graph</span><span className="font-mono text-[10px] text-coral">REVIEW</span></div>
+        <div className="relative mt-4 h-40 rounded-xl border border-border bg-muted/60">
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 300 160" fill="none">
+            <path d="M55 80 L130 42 L245 55" className="stroke-border" strokeWidth="1.5" />
+            <path d="M55 80 L135 110 L245 112" className="stroke-coral" strokeWidth="2" />
+            <path d="M130 42 L135 110" className="stroke-accent" strokeWidth="2" />
           </svg>
-          <span className="absolute top-2 right-2 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
-            C++23
-          </span>
+          {nodes.map(([label, pos]) => <span key={label} className={`absolute ${pos} flex size-10 items-center justify-center rounded-full border border-accent/35 bg-card font-mono text-[10px] text-accent`}>{label}</span>)}
         </div>
+        <div className="mt-3 flex items-center gap-2 font-mono text-[10px] text-muted-foreground"><Activity size={12} className="text-coral" /> graph + temporal features → calibrated risk</div>
+      </Panel>
+    </VisualFrame>
+  )
+}
 
-        {/* Terminal output panel */}
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
-          <div className="flex items-center gap-1.5 border-b border-border px-2.5 py-1.5 text-[9px] text-muted-foreground">
-            <Terminal size={10} className="text-accent" />
-            <span className="font-mono">markov --order 2 corpus.txt</span>
-          </div>
-          <p className="px-2.5 py-2 font-mono text-[10px] leading-relaxed text-muted-foreground">
-            <span className="text-accent">›</span> the quick brown fox jumps over…
-            <span className="ml-0.5 inline-block h-2.5 w-1 translate-y-0.5 bg-coral/80" />
-          </p>
+function ClinicalVisual() {
+  return (
+    <VisualFrame>
+      <Panel>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-semibold"><Stethoscope size={16} className="text-accent" /> O.A.S.I.S.</span><span className="font-mono text-[10px] text-muted-foreground">screening support</span></div>
+        <div className="mt-4 grid gap-2">
+          {[['Red flags', 'priority override'], ['Eligibility', 'programme rules'], ['Model support', 'optional signal'], ['Referral', 'explainable priority']].map(([a,b], i) => (
+            <div key={a} className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-[10px]"><span className="text-foreground">{a}</span><span className={i === 0 ? 'text-coral' : 'text-muted-foreground'}>{b}</span></div>
+          ))}
         </div>
-      </div>
+        <p className="mt-3 font-mono text-[10px] text-muted-foreground">supports decisions · does not diagnose</p>
+      </Panel>
+    </VisualFrame>
+  )
+}
+
+function AgentLabVisual() {
+  return (
+    <VisualFrame>
+      <Panel>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-semibold"><BrainCircuit size={16} className="text-accent" /> agent lab</span><span className="font-mono text-[10px] text-muted-foreground">trial #042</span></div>
+        <div className="mt-4 flex justify-between gap-2">
+          {['A', 'B', 'C', 'D'].map((agent, i) => <div key={agent} className={`flex size-12 items-center justify-center rounded-xl border ${i === 2 ? 'border-coral/40 bg-coral/10 text-coral' : 'border-border bg-muted text-muted-foreground'}`}><Bot size={18} /></div>)}
+        </div>
+        <div className="mt-4 rounded-xl border border-border bg-muted p-3 font-mono text-[10px] leading-relaxed text-muted-foreground">
+          <p>answer → vote → eliminate</p>
+          <p>checkpoint: saved</p>
+          <p>events: SQLite provenance</p>
+          <p className="text-accent">diagnostic: position concentration</p>
+        </div>
+      </Panel>
+    </VisualFrame>
+  )
+}
+
+function HeatMapVisual() {
+  return (
+    <VisualFrame>
+      <Panel>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-semibold"><ThermometerSun size={16} className="text-coral" /> HeatOps</span><span className="font-mono text-[10px] text-muted-foreground">placement plan</span></div>
+        <div className="mt-4 grid grid-cols-5 gap-1">
+          {Array.from({ length: 25 }, (_, i) => <span key={i} className={`aspect-square rounded ${i % 7 === 0 || i % 11 === 0 ? 'bg-coral/55' : i % 3 === 0 ? 'bg-accent/35' : 'bg-border/70'}`} />)}
+        </div>
+        <div className="mt-4 flex items-center justify-between font-mono text-[10px] text-muted-foreground"><span>heat + vulnerability</span><span>→ optimizer</span><span className="text-accent">3 sites</span></div>
+      </Panel>
     </VisualFrame>
   )
 }
 
 const visuals: Record<ProjectVisualKind, () => React.ReactElement> = {
-  'tab-jumper': TabJumperVisual,
-  'employee-dashboard': EmployeeDashboardVisual,
-  'markov-chain': MarkovChainVisual,
+  'test-impact': TestImpactVisual,
+  webmcp: WebMcpVisual,
+  'fraud-graph': FraudGraphVisual,
+  'clinical-system': ClinicalVisual,
+  'agent-lab': AgentLabVisual,
+  'heat-map': HeatMapVisual,
 }
 
 export function ProjectVisual({ visual }: { visual: ProjectVisualKind }) {
