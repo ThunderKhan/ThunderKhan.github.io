@@ -4,6 +4,7 @@ import { About } from './components/About'
 import { Projects } from './components/Projects'
 import { OpenSource } from './components/OpenSource'
 import { Skills } from './components/Skills'
+import { LatestWriting } from './components/LatestWriting'
 import { Education } from './components/Education'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
@@ -58,6 +59,7 @@ export default function App() {
             <Projects />
             <OpenSource />
             <Skills />
+            <LatestWriting />
             <Education />
             <Contact />
           </>
