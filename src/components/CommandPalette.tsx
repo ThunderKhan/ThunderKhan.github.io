@@ -11,7 +11,7 @@ import {
   Wrench,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { links, site } from '../data/portfolio'
 import type { BackgroundMode } from '../hooks/useBackgroundMode'
 
@@ -40,11 +40,11 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const close = () => {
+  const close = useCallback(() => {
     onOpenChange(false)
     setQuery('')
     setActiveIndex(0)
-  }
+  }, [onOpenChange])
 
   const commands = useMemo<Command[]>(
     () => [
@@ -188,7 +188,7 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onOpenChange])
+  }, [close, open, onOpenChange])
 
   if (!open) return null
 
