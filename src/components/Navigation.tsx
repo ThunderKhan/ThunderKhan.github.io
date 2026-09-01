@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BookOpenText, FileText, Moon, Sun } from 'lucide-react'
+import { BookOpenText, Command, FileText, Moon, Sun } from 'lucide-react'
 import { site } from '../data/portfolio'
 import { useTheme } from '../hooks/useTheme'
 import type { BackgroundMode } from '../hooks/useBackgroundMode'
@@ -8,15 +8,21 @@ import { BackgroundSelector } from './BackgroundSelector'
 type NavigationProps = {
   backgroundMode: BackgroundMode
   onSelectBackground: (mode: BackgroundMode) => void
+  onOpenCommandPalette: () => void
   isBlog?: boolean
 }
 
 /**
  * Minimal transparent top utility bar: monogram, writing, résumé, theme toggle,
- * and ambient-background selector. Gains a blurred surface after scroll.
+ * ambient-background selector, and command palette. Gains a blurred surface after scroll.
  * Section navigation lives in the FloatingDock on the portfolio home page.
  */
-export function Navigation({ backgroundMode, onSelectBackground, isBlog = false }: NavigationProps) {
+export function Navigation({
+  backgroundMode,
+  onSelectBackground,
+  onOpenCommandPalette,
+  isBlog = false,
+}: NavigationProps) {
   const { theme, toggleTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
 
@@ -48,6 +54,20 @@ export function Navigation({ backgroundMode, onSelectBackground, isBlog = false 
         </a>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            aria-label="Open command palette"
+            title="Command palette (Ctrl/⌘ K)"
+            className="group flex h-9 items-center gap-1.5 rounded-full border border-border bg-card/60 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent hover:text-foreground sm:px-3"
+          >
+            <Command size={13} aria-hidden="true" />
+            <span className="hidden lg:inline">Command</span>
+            <kbd className="hidden rounded border border-border bg-background/70 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground sm:inline">
+              ⌘K
+            </kbd>
+          </button>
+
           <a
             href="/blog"
             className={`flex h-9 items-center gap-1.5 rounded-full border bg-card/60 px-3 text-xs font-medium transition-colors ${
