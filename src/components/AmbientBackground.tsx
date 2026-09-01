@@ -18,6 +18,11 @@ const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
  * Aurora (drifting light rays), Blueprint (engineering grid),
  * Quiet (near-solid with faint texture).
  *
+ * The layer is deliberately kept in the page's root stacking context at z-0
+ * instead of a negative z-index. A negative z-index placed it behind the
+ * opaque html/body paint layer, making all three selector modes appear to do
+ * nothing even though the state was changing correctly.
+ *
  * Pointer parallax is applied directly to a DOM ref (max ~5px) so it
  * never triggers React re-renders; disabled on touch and reduced motion.
  */
@@ -52,8 +57,7 @@ export function AmbientBackground({ mode }: AmbientBackgroundProps) {
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 -z-10 overflow-hidden"
-      style={{ pointerEvents: 'none' }}
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
       <div ref={parallaxRef} className="absolute -inset-8 will-change-transform">
         {mode === 'aurora' && (
