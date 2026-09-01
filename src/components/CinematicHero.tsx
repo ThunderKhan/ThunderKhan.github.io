@@ -15,19 +15,26 @@ export function CinematicHero() {
     offset: ['start start', 'end end'],
   })
 
-  const scale = useTransform(scrollYProgress, [0, 0.72, 1], [1.02, 1.14, 1.2])
+  const scale = useTransform(scrollYProgress, [0, 0.78, 1], [1.02, 1.14, 1.2])
   const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '-4%'])
   const imageX = useTransform(scrollYProgress, [0, 1], ['0%', '-2.5%'])
-  const introOpacity = useTransform(scrollYProgress, [0, 0.24, 0.43], [1, 1, 0])
-  const introY = useTransform(scrollYProgress, [0, 0.43], ['0px', '-48px'])
-  const skillOpacity = useTransform(scrollYProgress, [0.16, 0.31, 0.5, 0.66], [0, 1, 1, 0])
-  const skillY = useTransform(scrollYProgress, [0.16, 0.4, 0.66], ['34px', '0px', '-28px'])
-  const secondOpacity = useTransform(scrollYProgress, [0.46, 0.61, 0.82, 0.95], [0, 1, 1, 0])
-  const secondY = useTransform(scrollYProgress, [0.46, 0.66, 0.95], ['42px', '0px', '-42px'])
-  const veilOpacity = useTransform(scrollYProgress, [0, 0.7, 1], [0.24, 0.42, 0.76])
-  const exitOpacity = useTransform(scrollYProgress, [0.86, 1], [1, 0.16])
-  const terminalOpacity = useTransform(scrollYProgress, [0.27, 0.42, 0.72, 0.86], [0, 1, 1, 0])
-  const terminalY = useTransform(scrollYProgress, [0.27, 0.5, 0.86], ['24px', '0px', '-18px'])
+
+  // Opening identity gets a full beat before yielding to the proof-of-work scene.
+  const introOpacity = useTransform(scrollYProgress, [0, 0.22, 0.34], [1, 1, 0])
+  const introY = useTransform(scrollYProgress, [0, 0.34], ['0px', '-48px'])
+
+  // Keep the skills + terminal scene visible for a deliberately long stretch.
+  const skillOpacity = useTransform(scrollYProgress, [0.2, 0.31, 0.72, 0.82], [0, 1, 1, 0])
+  const skillY = useTransform(scrollYProgress, [0.2, 0.36, 0.82], ['34px', '0px', '-28px'])
+  const terminalOpacity = useTransform(scrollYProgress, [0.27, 0.38, 0.73, 0.83], [0, 1, 1, 0])
+  const terminalY = useTransform(scrollYProgress, [0.27, 0.42, 0.83], ['24px', '0px', '-18px'])
+
+  // The final message now waits until the skill scene has had time to breathe.
+  const secondOpacity = useTransform(scrollYProgress, [0.75, 0.84, 0.94, 0.985], [0, 1, 1, 0])
+  const secondY = useTransform(scrollYProgress, [0.75, 0.86, 0.985], ['42px', '0px', '-42px'])
+
+  const veilOpacity = useTransform(scrollYProgress, [0, 0.76, 1], [0.24, 0.42, 0.76])
+  const exitOpacity = useTransform(scrollYProgress, [0.92, 1], [1, 0.16])
 
   const imageStyle = reducedMotion
     ? undefined
@@ -38,7 +45,7 @@ export function CinematicHero() {
       ref={sectionRef}
       id="hero"
       aria-label="Introduction"
-      className="relative h-[250svh] bg-black"
+      className="relative h-[400svh] bg-black"
     >
       <div className="sticky top-0 h-svh overflow-hidden bg-black">
         <m.img
