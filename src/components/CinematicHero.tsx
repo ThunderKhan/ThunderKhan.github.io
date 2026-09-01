@@ -15,7 +15,6 @@ export function CinematicHero() {
     offset: ['start start', 'end end'],
   })
 
-  // Camera move: push toward the workstation, then deliberately settle before the final scene.
   const scale = useTransform(
     scrollYProgress,
     [0, 0.22, 0.58, 0.74, 0.9, 1],
@@ -24,34 +23,50 @@ export function CinematicHero() {
   const imageY = useTransform(scrollYProgress, [0, 0.58, 0.82, 1], ['0%', '-2.8%', '-3.4%', '-4%'])
   const imageX = useTransform(scrollYProgress, [0, 0.58, 0.82, 1], ['0%', '-1.8%', '-2.2%', '-2.5%'])
 
-  // Opening identity gets a full beat before yielding to the proof-of-work scene.
   const introOpacity = useTransform(scrollYProgress, [0, 0.22, 0.34], [1, 1, 0])
   const introY = useTransform(scrollYProgress, [0, 0.34], ['0px', '-48px'])
 
-  // Long proof-of-work scene.
   const skillOpacity = useTransform(scrollYProgress, [0.2, 0.31, 0.72, 0.82], [0, 1, 1, 0])
   const skillY = useTransform(scrollYProgress, [0.2, 0.36, 0.82], ['34px', '0px', '-28px'])
   const terminalOpacity = useTransform(scrollYProgress, [0.27, 0.38, 0.73, 0.83], [0, 1, 1, 0])
   const terminalY = useTransform(scrollYProgress, [0.27, 0.42, 0.83], ['24px', '0px', '-18px'])
 
-  // Skill chips reveal one at a time instead of appearing as a single block.
-  const skill1 = useTransform(scrollYProgress, [0.29, 0.335], [0, 1])
-  const skill2 = useTransform(scrollYProgress, [0.335, 0.38], [0, 1])
-  const skill3 = useTransform(scrollYProgress, [0.38, 0.425], [0, 1])
-  const skill4 = useTransform(scrollYProgress, [0.425, 0.47], [0, 1])
-  const skillProgress = [skill1, skill2, skill3, skill4]
+  const skill1Opacity = useTransform(scrollYProgress, [0.29, 0.335], [0, 1])
+  const skill2Opacity = useTransform(scrollYProgress, [0.335, 0.38], [0, 1])
+  const skill3Opacity = useTransform(scrollYProgress, [0.38, 0.425], [0, 1])
+  const skill4Opacity = useTransform(scrollYProgress, [0.425, 0.47], [0, 1])
+  const skill1Y = useTransform(skill1Opacity, [0, 1], [14, 0])
+  const skill2Y = useTransform(skill2Opacity, [0, 1], [14, 0])
+  const skill3Y = useTransform(skill3Opacity, [0, 1], [14, 0])
+  const skill4Y = useTransform(skill4Opacity, [0, 1], [14, 0])
+  const skill1Scale = useTransform(skill1Opacity, [0, 1], [0.94, 1])
+  const skill2Scale = useTransform(skill2Opacity, [0, 1], [0.94, 1])
+  const skill3Scale = useTransform(skill3Opacity, [0, 1], [0.94, 1])
+  const skill4Scale = useTransform(skill4Opacity, [0, 1], [0.94, 1])
+  const skillStyles = [
+    { opacity: skill1Opacity, y: skill1Y, scale: skill1Scale },
+    { opacity: skill2Opacity, y: skill2Y, scale: skill2Scale },
+    { opacity: skill3Opacity, y: skill3Y, scale: skill3Scale },
+    { opacity: skill4Opacity, y: skill4Y, scale: skill4Scale },
+  ]
 
-  // Terminal output is also scroll-written line by line.
-  const terminalLine1 = useTransform(scrollYProgress, [0.385, 0.43], [0, 1])
-  const terminalLine2 = useTransform(scrollYProgress, [0.43, 0.475], [0, 1])
-  const terminalLine3 = useTransform(scrollYProgress, [0.475, 0.52], [0, 1])
-  const terminalLine4 = useTransform(scrollYProgress, [0.52, 0.565], [0, 1])
-  const terminalLineProgress = [terminalLine1, terminalLine2, terminalLine3, terminalLine4]
+  const terminal1Opacity = useTransform(scrollYProgress, [0.385, 0.43], [0, 1])
+  const terminal2Opacity = useTransform(scrollYProgress, [0.43, 0.475], [0, 1])
+  const terminal3Opacity = useTransform(scrollYProgress, [0.475, 0.52], [0, 1])
+  const terminal4Opacity = useTransform(scrollYProgress, [0.52, 0.565], [0, 1])
+  const terminal1X = useTransform(terminal1Opacity, [0, 1], [-8, 0])
+  const terminal2X = useTransform(terminal2Opacity, [0, 1], [-8, 0])
+  const terminal3X = useTransform(terminal3Opacity, [0, 1], [-8, 0])
+  const terminal4X = useTransform(terminal4Opacity, [0, 1], [-8, 0])
+  const terminalStyles = [
+    { opacity: terminal1Opacity, x: terminal1X },
+    { opacity: terminal2Opacity, x: terminal2X },
+    { opacity: terminal3Opacity, x: terminal3X },
+    { opacity: terminal4Opacity, x: terminal4X },
+  ]
 
-  // A tiny breathing/settling beat once the proof scene is fully assembled.
   const proofScale = useTransform(scrollYProgress, [0.55, 0.61, 0.69], [0.985, 1, 1])
 
-  // Final message waits until the proof scene has had time to breathe.
   const secondOpacity = useTransform(scrollYProgress, [0.75, 0.84, 0.94, 0.985], [0, 1, 1, 0])
   const secondY = useTransform(scrollYProgress, [0.75, 0.86, 0.985], ['42px', '0px', '-42px'])
 
@@ -154,15 +169,7 @@ export function CinematicHero() {
               {skillSignals.map((signal, index) => (
                 <m.span
                   key={signal}
-                  style={
-                    reducedMotion
-                      ? undefined
-                      : {
-                          opacity: skillProgress[index],
-                          y: useTransform(skillProgress[index], [0, 1], [14, 0]),
-                          scale: useTransform(skillProgress[index], [0, 1], [0.94, 1]),
-                        }
-                  }
+                  style={reducedMotion ? undefined : skillStyles[index]}
                   className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-mono text-[11px] tracking-[0.18em] text-white/85 uppercase backdrop-blur-xl sm:text-xs"
                 >
                   {signal}
@@ -191,14 +198,7 @@ export function CinematicHero() {
                 <m.p
                   key={index}
                   className={index === 0 || index === 3 ? '' : 'text-white/50'}
-                  style={
-                    reducedMotion
-                      ? undefined
-                      : {
-                          opacity: terminalLineProgress[index],
-                          x: useTransform(terminalLineProgress[index], [0, 1], [-8, 0]),
-                        }
-                  }
+                  style={reducedMotion ? undefined : terminalStyles[index]}
                 >
                   {line}
                 </m.p>
