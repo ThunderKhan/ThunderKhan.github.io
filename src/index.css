@@ -45,6 +45,15 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
   background-color: var(--color-background);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -66,6 +75,8 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 ::selection {
@@ -308,4 +319,3 @@ body {
   );
   pointer-events: none;
 }
-
