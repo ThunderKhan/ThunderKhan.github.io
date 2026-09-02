@@ -16,7 +16,7 @@ import { useMemo, useState } from 'react'
 import { openSource } from '../data/portfolio'
 import type { TimelineCategory, TimelineLink, TimelineStatus } from '../data/portfolio'
 import { Section } from './Section'
-import { EASE, StaggerGroup, StaggerItem } from './Reveal'
+import { EASE, revealVariants } from './Reveal'
 
 const CATEGORY_ICON: Record<TimelineCategory, LucideIcon> = {
   'Project workflow': GitBranch,
@@ -87,6 +87,7 @@ function TimelineLine() {
 export function OpenSource() {
   const [filter, setFilter] = useState<TimelineFilter>('all')
   const [showEarlier, setShowEarlier] = useState(false)
+  const reduced = useReducedMotion()
 
   const upstreamCount = openSource.filter((entry) => isUpstream(entry.category)).length
   const activeCount = openSource.filter((entry) => entry.status !== 'completed').length
@@ -159,7 +160,7 @@ export function OpenSource() {
       <div className="relative">
         <TimelineLine />
 
-        <StaggerGroup as="ol" className="flex flex-col gap-8 md:gap-12" stagger={0.1}>
+        <ol className="flex flex-col gap-8 md:gap-12">
           {visibleEntries.map((entry, index) => {
             const status = STATUS[entry.status]
             const coral = status.tone === 'coral'
@@ -169,10 +170,13 @@ export function OpenSource() {
             const rightSide = index % 2 === 1
 
             return (
-              <StaggerItem
-                as="li"
+              <m.li
                 key={entry.title}
                 className="relative md:grid md:grid-cols-2 md:gap-x-14"
+                initial={reduced ? false : 'hidden'}
+                whileInView={reduced ? undefined : 'visible'}
+                viewport={{ once: true, margin: '-60px' }}
+                variants={revealVariants}
               >
                 <span
                   aria-hidden="true"
@@ -295,10 +299,10 @@ export function OpenSource() {
                     )}
                   </article>
                 </div>
-              </StaggerItem>
+              </m.li>
             )
           })}
-        </StaggerGroup>
+        </ol>
 
         {shouldCollapse && (
           <div className="relative z-20 mt-10 flex justify-center">
