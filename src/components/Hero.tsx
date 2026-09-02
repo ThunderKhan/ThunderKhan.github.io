@@ -1,17 +1,10 @@
-import { HeroShaderGradient } from './HeroShaderGradient'
+import { CinematicHero } from './CinematicHero'
 
 /**
- * Temporary shader-only hero preview.
+ * Primary portfolio hero.
  *
- * The cinematic hero is intentionally disabled for now so the ShaderGradient
- * can be evaluated on its own without the existing imagery masking it.
+ * The cinematic scroll experience is the default homepage hero.
  */
 export function Hero() {
-  return (
-    <section id="hero" aria-label="Shader gradient preview" className="relative h-svh overflow-hidden bg-black">
-      <div className="absolute inset-0">
-        <HeroShaderGradient />
-      </div>
-    </section>
-  )
+  return <CinematicHero />
 }
