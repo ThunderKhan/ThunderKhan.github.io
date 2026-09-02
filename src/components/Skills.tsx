@@ -131,7 +131,6 @@ function DomainCard({ group, onOpen }: { group: SkillGroup; onOpen: (group: Skil
 
   return (
     <m.article
-      layoutId={`skill-card-${group.title}`}
       role="button"
       tabIndex={0}
       aria-label={`Open details for ${meta.label}`}
@@ -142,6 +141,7 @@ function DomainCard({ group, onOpen }: { group: SkillGroup; onOpen: (group: Skil
           onOpen(group)
         }
       }}
+      whileTap={{ scale: 0.985, rotateZ: -0.35 }}
       className={`bento-glow group relative cursor-pointer overflow-hidden rounded-3xl border border-border bg-card p-6 outline-none transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-accent/70 motion-reduce:hover:translate-y-0 ${
         coral ? 'hover:border-coral/40' : 'hover:border-accent/40'
       }`}
@@ -218,23 +218,74 @@ function SkillDetail({ group, onClose }: { group: SkillGroup; onClose: () => voi
 
   return (
     <m.div
-      className="fixed inset-0 z-[140] flex items-center justify-center bg-black/55 p-4 backdrop-blur-md sm:p-6"
-      initial={reducedMotion ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={reducedMotion ? undefined : { opacity: 0 }}
-      transition={{ duration: 0.22 }}
+      className="fixed inset-0 z-[140] flex items-center justify-center bg-black/58 p-4 backdrop-blur-md sm:p-6"
+      initial={reducedMotion ? false : { opacity: 0, backdropFilter: 'blur(0px)' }}
+      animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
+      exit={reducedMotion ? undefined : { opacity: 0, backdropFilter: 'blur(0px)' }}
+      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
+      style={{ perspective: 1200 }}
     >
       <m.article
-        layoutId={`skill-card-${group.title}`}
         role="dialog"
         aria-modal="true"
         aria-label={`${meta.label} details`}
-        className="relative max-h-[84svh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-border bg-card p-6 shadow-[0_30px_120px_rgba(0,0,0,0.48)] sm:p-8"
-        transition={{ type: 'spring', stiffness: 300, damping: 30, mass: 0.8 }}
+        className="relative max-h-[84svh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-border bg-card p-6 shadow-[0_45px_140px_rgba(0,0,0,0.62)] sm:p-8"
+        initial={
+          reducedMotion
+            ? false
+            : {
+                opacity: 0,
+                scale: 0.58,
+                y: 110,
+                rotateX: 28,
+                rotateY: -10,
+                rotateZ: -3.2,
+              }
+        }
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          rotateX: 0,
+          rotateY: 0,
+          rotateZ: 0,
+        }}
+        exit={
+          reducedMotion
+            ? undefined
+            : {
+                opacity: 0,
+                scale: 0.62,
+                y: 95,
+                rotateX: -22,
+                rotateY: 9,
+                rotateZ: 2.6,
+              }
+        }
+        transition={
+          reducedMotion
+            ? { duration: 0 }
+            : {
+                type: 'spring',
+                stiffness: 430,
+                damping: 27,
+                mass: 0.72,
+              }
+        }
+        style={{ transformStyle: 'preserve-3d', transformOrigin: '50% 85%' }}
       >
+        <m.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent"
+          initial={reducedMotion ? false : { opacity: 0, scaleX: 0.35 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          exit={reducedMotion ? undefined : { opacity: 0, scaleX: 0.35 }}
+          transition={{ delay: reducedMotion ? 0 : 0.1, duration: 0.24 }}
+        />
+
         <button
           type="button"
           onClick={onClose}
@@ -413,7 +464,7 @@ export function Skills() {
         )}
       </Section>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedGroup && <SkillDetail group={selectedGroup} onClose={() => setSelectedGroup(null)} />}
       </AnimatePresence>
     </>
