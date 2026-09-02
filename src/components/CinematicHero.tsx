@@ -17,7 +17,6 @@ export function CinematicHero() {
     offset: ['start start', 'end end'],
   })
 
-  // Scene one now uses the native landscape composition as a true full-bleed frame.
   const singularityOpacity = useTransform(scrollYProgress, [0, 0.2, 0.31, 0.38], [1, 1, 0.72, 0])
   const singularityScale = useTransform(scrollYProgress, [0, 0.38], [1.02, 1.16])
   const singularityX = useTransform(scrollYProgress, [0, 0.38], ['0%', '-2%'])
@@ -89,16 +88,11 @@ export function CinematicHero() {
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="absolute inset-0 h-full w-full select-none object-cover object-[60%_50%] sm:object-[58%_50%] lg:object-[56%_50%]"
+          className="absolute inset-0 h-full w-full select-none object-cover object-[54%_50%] sm:object-[58%_50%] lg:object-[56%_50%]"
           style={
             reducedMotion
               ? { opacity: 1 }
-              : {
-                  opacity: singularityOpacity,
-                  scale: singularityScale,
-                  x: singularityX,
-                  y: singularityY,
-                }
+              : { opacity: singularityOpacity, scale: singularityScale, x: singularityX, y: singularityY }
           }
         />
 
@@ -113,31 +107,17 @@ export function CinematicHero() {
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="absolute inset-0 h-full w-full select-none object-cover object-[52%_50%] sm:object-[50%_50%] lg:object-[50%_48%]"
+          className="absolute inset-0 h-full w-full select-none object-cover object-[61%_50%] sm:object-[50%_50%] lg:object-[50%_48%]"
           style={
             reducedMotion
               ? { opacity: 1 }
-              : {
-                  opacity: workspaceOpacity,
-                  scale: workspaceScale,
-                  y: workspaceY,
-                  x: workspaceX,
-                }
+              : { opacity: workspaceOpacity, scale: workspaceScale, y: workspaceY, x: workspaceX }
           }
         />
 
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/82 via-black/28 to-black/5"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/82 via-transparent to-black/30"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.72)]"
-          aria-hidden="true"
-        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/86 via-black/32 to-black/5 sm:from-black/82 sm:via-black/28" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/88 via-transparent to-black/38 sm:from-black/82 sm:to-black/30" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.78)] sm:shadow-[inset_0_0_180px_rgba(0,0,0,0.72)]" aria-hidden="true" />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.11] mix-blend-soft-light"
           aria-hidden="true"
@@ -155,34 +135,30 @@ export function CinematicHero() {
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8 lg:px-12">
           <m.div
-            className="absolute top-[22%] left-5 max-w-[44rem] sm:left-8 lg:top-[24%] lg:left-12 lg:max-w-[42rem]"
+            className="absolute top-[17%] left-5 right-5 max-w-[36rem] sm:top-[22%] sm:right-auto sm:left-8 sm:max-w-[44rem] lg:top-[24%] lg:left-12 lg:max-w-[42rem]"
             style={reducedMotion ? undefined : { opacity: introOpacity, y: introY, scale: introScale }}
           >
-            <p className="mb-5 font-mono text-xs tracking-[0.28em] text-white/70 uppercase sm:text-sm">
+            <p className="mb-4 max-w-[21rem] font-mono text-[10px] leading-relaxed tracking-[0.24em] text-white/68 uppercase sm:mb-5 sm:max-w-none sm:text-sm sm:tracking-[0.28em]">
               {site.tagline}
             </p>
-            <h1 className="text-5xl leading-[0.96] font-bold tracking-[-0.055em] text-white text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-[22rem] text-[clamp(2.65rem,13vw,4.2rem)] leading-[0.94] font-bold tracking-[-0.055em] text-white sm:max-w-none sm:text-6xl lg:text-7xl">
               Hi, I&apos;m <span className="text-violet-300">{site.name}.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/86 text-pretty drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:text-xl lg:text-2xl">
+            <p className="mt-5 max-w-[21rem] text-[15px] leading-[1.45] text-white/82 drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:mt-6 sm:max-w-xl sm:text-xl sm:leading-relaxed lg:text-2xl">
               {site.headline}
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-nowrap items-center gap-2.5 sm:mt-9 sm:flex-wrap sm:gap-3">
               <a
                 href="#projects"
-                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)]"
+                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)] sm:px-6"
               >
                 Enter my work
-                <ArrowRight
-                  size={16}
-                  aria-hidden="true"
-                  className="transition-transform group-hover:translate-x-0.5"
-                />
+                <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
               </a>
               <a
                 href={site.resume}
                 download
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/20 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/25 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35 sm:px-6"
               >
                 <Download size={15} aria-hidden="true" />
                 Résumé
@@ -191,15 +167,15 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute inset-x-5 top-[52%] sm:inset-x-8 lg:inset-x-12"
+            className="absolute inset-x-5 top-[50%] sm:inset-x-8 sm:top-[52%] lg:inset-x-12"
             style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY, scale: proofScale }}
           >
-            <div className="flex flex-wrap gap-2.5 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
               {skillSignals.map((signal, index) => (
                 <m.span
                   key={signal}
                   style={reducedMotion ? undefined : skillStyles[index]}
-                  className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-mono text-[11px] tracking-[0.18em] text-white/85 uppercase backdrop-blur-xl sm:text-xs"
+                  className="truncate rounded-full border border-white/20 bg-black/35 px-3 py-2 text-center font-mono text-[9px] tracking-[0.15em] text-white/82 uppercase backdrop-blur-xl sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                 >
                   {signal}
                 </m.span>
@@ -208,32 +184,23 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute right-5 top-[58%] w-[min(92vw,430px)] rounded-2xl border border-white/15 bg-black/35 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:right-8 lg:right-12"
-            style={
-              reducedMotion
-                ? { opacity: 1 }
-                : { opacity: terminalOpacity, y: terminalY, scale: proofScale }
-            }
+            className="absolute right-5 left-5 top-[61%] rounded-2xl border border-white/15 bg-black/48 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl sm:right-8 sm:left-auto sm:top-[58%] sm:w-[min(92vw,430px)] lg:right-12"
+            style={reducedMotion ? { opacity: 1 } : { opacity: terminalOpacity, y: terminalY, scale: proofScale }}
           >
             <div className="mb-3 flex items-center gap-2">
               <span className="size-2 rounded-full bg-white/45" />
               <span className="size-2 rounded-full bg-white/30" />
               <span className="size-2 rounded-full bg-white/20" />
-              <span className="ml-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
+              <span className="ml-2 font-mono text-[9px] tracking-[0.14em] text-white/45 uppercase sm:text-[10px] sm:tracking-[0.16em]">
                 ayan@portfolio
               </span>
             </div>
-            <div className="space-y-1 font-mono text-xs leading-relaxed text-white/72 sm:text-sm">
+            <div className="space-y-1 font-mono text-[11px] leading-relaxed text-white/72 sm:text-sm">
               {[
-                <>
-                  <span className="text-violet-300">$</span> build --curious --public
-                </>,
+                <><span className="text-violet-300">$</span> build --curious --public</>,
                 <>stack: react · typescript · c++ · python</>,
                 <>mode: prototype → test → refine</>,
-                <>
-                  <span className="text-violet-300">✓</span> shipping proof, not just claims{' '}
-                  <span className="ml-1 inline-block h-[1em] w-[0.45em] translate-y-[2px] bg-violet-300/80 animate-pulse" />
-                </>,
+                <><span className="text-violet-300">✓</span> shipping proof, not just claims{' '}<span className="ml-1 inline-block h-[1em] w-[0.45em] translate-y-[2px] bg-violet-300/80 animate-pulse" /></>,
               ].map((line, index) => (
                 <m.p
                   key={index}
@@ -247,21 +214,21 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute right-5 bottom-[15%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]"
+            className="absolute right-5 bottom-[16%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]"
             style={reducedMotion ? { opacity: 1 } : { opacity: secondOpacity, y: secondY }}
           >
-            <p className="font-mono text-xs tracking-[0.24em] text-cyan-100/75 uppercase sm:text-sm">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-cyan-100/75 uppercase sm:text-sm sm:tracking-[0.24em]">
               Build · test · learn · repeat
             </p>
-            <p className="mt-4 text-3xl leading-tight font-semibold tracking-[-0.035em] text-white text-balance drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-5xl">
+            <p className="mt-3 text-2xl leading-tight font-semibold tracking-[-0.035em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:mt-4 sm:text-5xl">
               From ideas to systems you can actually use.
             </p>
-            <p className="mt-5 ml-auto max-w-lg text-sm leading-relaxed text-white/72 sm:text-base">
+            <p className="mt-4 ml-auto max-w-lg text-xs leading-relaxed text-white/72 sm:mt-5 sm:text-base">
               Full-stack applications, C++ systems, developer tools, open source, and experiments that make me question my assumptions.
             </p>
           </m.div>
 
-          <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/60">
+          <div className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-white/60 sm:flex sm:bottom-6">
             <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Scroll to enter</span>
             <ArrowDown size={15} aria-hidden="true" className="animate-bounce" />
           </div>
