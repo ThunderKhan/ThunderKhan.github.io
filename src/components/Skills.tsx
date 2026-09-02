@@ -164,9 +164,6 @@ function DomainCard({ group, onOpen }: { group: SkillGroup; onOpen: (group: Skil
           <span className="block font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
             {group.skills.length} signals
           </span>
-          <span className="mt-2 block font-mono text-[9px] tracking-[0.14em] text-muted-foreground/60 uppercase transition-colors group-hover:text-foreground">
-            click to inspect
-          </span>
         </div>
       </div>
 
