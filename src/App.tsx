@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { Navigation } from './components/Navigation'
 import { Hero } from './components/Hero'
 import { About } from './components/About'
 import { Projects } from './components/Projects'
 import { OpenSource } from './components/OpenSource'
 import { Skills } from './components/Skills'
+import { LatestWriting } from './components/LatestWriting'
 import { Education } from './components/Education'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
@@ -12,6 +14,7 @@ import { FloatingDock } from './components/FloatingDock'
 import { BlogIndex } from './components/BlogIndex'
 import { BlogPostPage } from './components/BlogPostPage'
 import { NotFoundPage } from './components/NotFoundPage'
+import { CommandPalette } from './components/CommandPalette'
 import { getBlogPost } from './data/blog-posts'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
 import { useRouterPath } from './hooks/useRouterPath'
@@ -28,6 +31,7 @@ function decodeBlogSlug(path: string) {
 
 export default function App() {
   const { mode, selectMode } = useBackgroundMode()
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const path = useRouterPath()
   const isBlog = path === '/blog' || path.startsWith('/blog/')
   const blogSlug = decodeBlogSlug(path)
@@ -43,7 +47,12 @@ export default function App() {
         Skip to main content
       </a>
       <AmbientBackground mode={mode} />
-      <Navigation backgroundMode={mode} onSelectBackground={selectMode} isBlog={isBlog} />
+      <Navigation
+        backgroundMode={mode}
+        onSelectBackground={selectMode}
+        onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+        isBlog={isBlog}
+      />
       <main id="main">
         {isNotFound ? (
           <NotFoundPage path={path} />
@@ -58,6 +67,7 @@ export default function App() {
             <Projects />
             <OpenSource />
             <Skills />
+            <LatestWriting />
             <Education />
             <Contact />
           </>
@@ -65,6 +75,11 @@ export default function App() {
       </main>
       <Footer />
       {!isBlog && !isNotFound && <FloatingDock />}
+      <CommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        onSelectBackground={selectMode}
+      />
     </>
   )
 }
