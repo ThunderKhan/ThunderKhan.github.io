@@ -2,9 +2,9 @@ import { ArrowDown, ArrowRight, Download } from 'lucide-react'
 import { m, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import { site } from '../data/portfolio'
+import { BlackHoleHeroSection } from './BlackHoleHeroSection'
 
 const WORKSPACE_IMAGE = '/experimental/cinematic-workspace.webp'
-const SINGULARITY_IMAGE = '/experimental/code-singularity-landscape.png'
 
 const skillSignals = ['FULL STACK', 'C++ SYSTEMS', 'DEVELOPER TOOLS', 'OPEN SOURCE']
 
@@ -83,18 +83,26 @@ export function CinematicHero() {
   return (
     <section ref={sectionRef} id="hero" aria-label="Introduction" className="relative h-[500svh] bg-black">
       <div className="sticky top-0 h-svh overflow-hidden bg-black">
-        <m.img
-          src={SINGULARITY_IMAGE}
-          alt=""
+        <m.div
           aria-hidden="true"
-          draggable={false}
-          className="absolute inset-0 h-full w-full select-none object-cover object-[54%_50%] sm:object-[58%_50%] lg:object-[56%_50%]"
+          className="pointer-events-none absolute inset-0 origin-center"
           style={
             reducedMotion
               ? { opacity: 1 }
               : { opacity: singularityOpacity, scale: singularityScale, x: singularityX, y: singularityY }
           }
-        />
+        >
+          <BlackHoleHeroSection
+            focus={[0.72, 0.46]}
+            resolution={0.68}
+            maxDpr={1.5}
+            steps={260}
+            brightness={1.05}
+            glow={1.05}
+            exposure={0.95}
+            className="h-full w-full"
+          />
+        </m.div>
 
         <m.div
           aria-hidden="true"
