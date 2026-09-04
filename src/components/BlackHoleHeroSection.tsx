@@ -253,7 +253,7 @@ export function BlackHoleHeroSection({
       const camX=dist*ce, camY=dist*Math.sin(el), camZ=0
       const fx=-camX/dist, fy=-camY/dist, fz=0
       let rx=fz, ry=0, rz=-fx; const rl=Math.hypot(rx,ry,rz)||1; rx/=rl;ry/=rl;rz/=rl
-      let ux=ry*fz-rz*fy, uy=rz*fx-rx*fz, uz=rx*fy-ry*fx
+      const ux=ry*fz-rz*fy, uy=rz*fx-rx*fz, uz=rx*fy-ry*fx
       const cr=Math.cos(C.roll*RAD),sr=Math.sin(C.roll*RAD)
       const RX=rx*cr+ux*sr,RY=ry*cr+uy*sr,RZ=rz*cr+uz*sr,UX=-rx*sr+ux*cr,UY=-ry*sr+uy*cr,UZ=-rz*sr+uz*cr
       const hot=hexToLinear(C.hotColor),mid=hexToLinear(C.midColor),cool=hexToLinear(C.coolColor),j=HALTON[frame%HALTON.length]
