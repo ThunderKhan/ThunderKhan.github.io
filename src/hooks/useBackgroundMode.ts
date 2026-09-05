@@ -2,36 +2,21 @@ import { useCallback, useState } from 'react'
 
 export type BackgroundMode = 'aurora' | 'blueprint' | 'quiet'
 
-// Bump the key whenever the site's default background experience changes.
-// This intentionally ignores older saved selections once so the new halftone
-// Aurora actually becomes visible after deployment instead of restoring a
-// previously selected Blueprint/Quiet mode from localStorage.
-const STORAGE_KEY = 'portfolio-background-v2'
-const MODES: BackgroundMode[] = ['aurora', 'blueprint', 'quiet']
-
-function getInitialMode(): BackgroundMode {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored && MODES.includes(stored as BackgroundMode)) {
-      return stored as BackgroundMode
-    }
-  } catch {
-    // localStorage unavailable — fall through to default.
-  }
-  return 'aurora'
-}
-
-/** Ambient background mode with localStorage persistence. Defaults to the halftone Aurora. */
+/**
+ * Temporary shader-validation mode.
+ *
+ * We force Aurora so the WebGL halftone canvas is always mounted while we
+ * evaluate the new background. This deliberately ignores any old persisted
+ * Blueprint/Quiet selection; once the shader direction is approved we can
+ * restore persistence for the alternate background modes.
+ */
 export function useBackgroundMode() {
-  const [mode, setMode] = useState<BackgroundMode>(getInitialMode)
+  const [mode, setMode] = useState<BackgroundMode>('aurora')
 
   const selectMode = useCallback((next: BackgroundMode) => {
+    // Keep the UI state responsive, but the initial page load is guaranteed
+    // to start on the shader rather than a stale localStorage preference.
     setMode(next)
-    try {
-      localStorage.setItem(STORAGE_KEY, next)
-    } catch {
-      // Persistence is best-effort.
-    }
   }, [])
 
   return { mode, selectMode }
