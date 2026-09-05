@@ -1,6 +1,10 @@
-import { AstraPortfolioHero } from './AstraPortfolioHero'
+import { CinematicHero } from './CinematicHero'
 
-/** Primary portfolio hero. */
+/**
+ * Primary portfolio hero.
+ *
+ * The cinematic scroll experience is the default homepage hero.
+ */
 export function Hero() {
-  return <AstraPortfolioHero />
+  return <CinematicHero />
 }
