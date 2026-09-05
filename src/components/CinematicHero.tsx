@@ -115,7 +115,7 @@ export function CinematicHero() {
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="absolute inset-0 h-full w-full select-none object-cover object-[61%_50%] sm:object-[50%_50%] lg:object-[50%_48%]"
+          className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-[61%_50%] sm:object-[50%_50%] lg:object-[50%_48%]"
           style={
             reducedMotion
               ? { opacity: 1 }
@@ -143,7 +143,7 @@ export function CinematicHero() {
 
         <div className="relative mx-auto h-full w-full max-w-7xl px-5 sm:px-8 lg:px-12">
           <m.div
-            className="absolute top-[17%] left-5 right-5 max-w-[36rem] sm:top-[22%] sm:right-auto sm:left-8 sm:max-w-[44rem] lg:top-[24%] lg:left-12 lg:max-w-[42rem]"
+            className="pointer-events-auto absolute top-[17%] right-5 left-5 z-20 max-w-[36rem] sm:top-[22%] sm:right-auto sm:left-8 sm:max-w-[44rem] lg:top-[24%] lg:left-12 lg:max-w-[42rem]"
             style={reducedMotion ? undefined : { opacity: introOpacity, y: introY, scale: introScale }}
           >
             <p className="mb-4 max-w-[21rem] font-mono text-[10px] leading-relaxed tracking-[0.24em] text-white/68 uppercase sm:mb-5 sm:max-w-none sm:text-sm sm:tracking-[0.28em]">
@@ -158,15 +158,15 @@ export function CinematicHero() {
             <div className="mt-7 flex flex-nowrap items-center gap-2.5 sm:mt-9 sm:flex-wrap sm:gap-3">
               <a
                 href="#projects"
-                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)] sm:px-6"
+                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(255,255,255,0.16)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-6"
               >
                 Enter my work
                 <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
               </a>
               <a
                 href={site.resume}
-                download
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/25 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35 sm:px-6"
+                download="Ayan_Khan_Resume.pdf"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/25 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/55 hover:bg-black/35 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-6"
               >
                 <Download size={15} aria-hidden="true" />
                 Résumé
@@ -175,7 +175,7 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute inset-x-5 top-[50%] sm:inset-x-8 sm:top-[52%] lg:inset-x-12"
+            className="pointer-events-none absolute inset-x-5 top-[50%] sm:inset-x-8 sm:top-[52%] lg:inset-x-12"
             style={reducedMotion ? { opacity: 1 } : { opacity: skillOpacity, y: skillY, scale: proofScale }}
           >
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
@@ -192,7 +192,7 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute right-5 left-5 top-[61%] rounded-2xl border border-white/15 bg-black/48 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl sm:right-8 sm:left-auto sm:top-[58%] sm:w-[min(92vw,430px)] lg:right-12"
+            className="pointer-events-none absolute right-5 left-5 top-[61%] rounded-2xl border border-white/15 bg-black/48 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl sm:right-8 sm:left-auto sm:top-[58%] sm:w-[min(92vw,430px)] lg:right-12"
             style={reducedMotion ? { opacity: 1 } : { opacity: terminalOpacity, y: terminalY, scale: proofScale }}
           >
             <div className="mb-3 flex items-center gap-2">
@@ -222,7 +222,7 @@ export function CinematicHero() {
           </m.div>
 
           <m.div
-            className="absolute right-5 bottom-[16%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]"
+            className="pointer-events-none absolute right-5 bottom-[16%] left-5 ml-auto max-w-xl text-right sm:right-8 sm:left-auto lg:right-12 lg:bottom-[14%]"
             style={reducedMotion ? { opacity: 1 } : { opacity: secondOpacity, y: secondY }}
           >
             <p className="font-mono text-[10px] tracking-[0.2em] text-cyan-100/75 uppercase sm:text-sm sm:tracking-[0.24em]">
@@ -236,7 +236,7 @@ export function CinematicHero() {
             </p>
           </m.div>
 
-          <div className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-white/60 sm:flex sm:bottom-6">
+          <div className="pointer-events-none absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-white/60 sm:bottom-6 sm:flex">
             <span className="font-mono text-[10px] tracking-[0.2em] uppercase">Scroll to enter</span>
             <ArrowDown size={15} aria-hidden="true" className="animate-bounce" />
           </div>
