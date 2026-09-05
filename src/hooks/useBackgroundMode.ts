@@ -2,7 +2,11 @@ import { useCallback, useState } from 'react'
 
 export type BackgroundMode = 'aurora' | 'blueprint' | 'quiet'
 
-const STORAGE_KEY = 'portfolio-background'
+// Bump the key whenever the site's default background experience changes.
+// This intentionally ignores older saved selections once so the new halftone
+// Aurora actually becomes visible after deployment instead of restoring a
+// previously selected Blueprint/Quiet mode from localStorage.
+const STORAGE_KEY = 'portfolio-background-v2'
 const MODES: BackgroundMode[] = ['aurora', 'blueprint', 'quiet']
 
 function getInitialMode(): BackgroundMode {
@@ -17,7 +21,7 @@ function getInitialMode(): BackgroundMode {
   return 'aurora'
 }
 
-/** Ambient background mode with localStorage persistence. Defaults to Aurora. */
+/** Ambient background mode with localStorage persistence. Defaults to the halftone Aurora. */
 export function useBackgroundMode() {
   const [mode, setMode] = useState<BackgroundMode>(getInitialMode)
 
