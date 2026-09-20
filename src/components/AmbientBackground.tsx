@@ -383,13 +383,7 @@ function HalftoneShader() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches
     const saveData = 'connection' in navigator && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
-    const lowPower = coarsePointer || saveData || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
-
-    // Keep the animated WebGL background off phones and data-saver devices.
-    // This shader is decorative, so a static CSS fallback is preferable to
-    // consuming a continuous GPU frame budget.
-    if (lowPower) return
-
+    const mobile = coarsePointer || window.innerWidth < 768
     const pointer = { x: 0, y: 0, presence: 0, targetPresence: 0 }
 
     const onPointerMove = (event: PointerEvent) => {
@@ -406,9 +400,10 @@ function HalftoneShader() {
     document.documentElement.addEventListener('pointerleave', onPointerLeave)
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const width = Math.max(1, Math.floor(window.innerWidth * dpr))
-      const height = Math.max(1, Math.floor(window.innerHeight * dpr))
+      const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5)
+      const scale = mobile ? 0.6 : 1
+      const width = Math.max(1, Math.floor(window.innerWidth * dpr * scale))
+      const height = Math.max(1, Math.floor(window.innerHeight * dpr * scale))
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width
         canvas.height = height
@@ -426,7 +421,13 @@ function HalftoneShader() {
     let pausedAt = 0
     let pausedDuration = 0
 
+    let lastFrame = 0
     const render = (now: number) => {
+      if (mobile && now - lastFrame < 50) {
+        raf = requestAnimationFrame(render)
+        return
+      }
+      lastFrame = now
       pointer.presence += (pointer.targetPresence - pointer.presence) * 0.08
       const elapsed = reducedMotion ? 0 : (now - startedAt - pausedDuration) / 1000
 
