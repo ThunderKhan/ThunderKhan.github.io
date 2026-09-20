@@ -509,7 +509,16 @@ export function AmbientBackground({ mode }: AmbientBackgroundProps) {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {mode === 'aurora' ? (
-        <HalftoneShader />
+        <>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 70% 55% at 50% 34%, rgba(109,40,217,0.11), transparent 72%), radial-gradient(circle at 78% 18%, rgba(251,113,133,0.07), transparent 38%)',
+            }}
+          />
+          <HalftoneShader />
+        </>
       ) : (
         <div ref={parallaxRef} className="absolute -inset-8 will-change-transform">
           {mode === 'blueprint' && (
