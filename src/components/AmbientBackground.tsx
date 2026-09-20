@@ -297,6 +297,42 @@ void main() {
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }`
 
+const MOBILE_FRAGMENT_SHADER = `precision mediump float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec3 u_colors[4];
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x,u_resolution.y);
+  float n = noise(p * 2.6 + vec2(u_time * 0.055, -u_time * 0.035));
+  n = 0.5 * n + 0.5 * (sin(p.x * 3.2 + u_time * 0.22) * 0.5 + 0.5);
+  float glow = exp(-length(p - vec2(-0.12,0.08)) * 1.7);
+  float field = clamp(n * 0.72 + glow * 0.42, 0.0, 1.0);
+  vec3 col = mix(u_colors[0], u_colors[1], smoothstep(0.08,0.52,field));
+  col = mix(col, u_colors[2], smoothstep(0.38,0.82,field));
+  col = mix(col, u_colors[3], smoothstep(0.70,1.0,field) * 0.72);
+  float vignette = 1.0 - smoothstep(0.35,1.05,length(uv - 0.5)) * 0.24;
+  gl_FragColor = vec4(col * vignette, 1.0);
+}
+`
+
 const COLORS = [
   [0.043, 0.063, 0.149],
   [0.239, 0.275, 0.91],
@@ -324,11 +360,12 @@ function HalftoneShader() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gl = canvas.getContext('webgl', { alpha: false, antialias: false })
+    const gl = canvas.getContext('webgl', { alpha: false, antialias: false, powerPreference: mobile ? 'low-power' : 'high-performance' })
     if (!gl) return
 
     const vertex = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER)
-    const fragment = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER)
+    const fragmentSource = (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768) ? MOBILE_FRAGMENT_SHADER : FRAGMENT_SHADER
+    const fragment = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource)
     if (!vertex || !fragment) return
 
     const program = gl.createProgram()
@@ -382,7 +419,6 @@ function HalftoneShader() {
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches
-    const saveData = 'connection' in navigator && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
     const mobile = coarsePointer || window.innerWidth < 768
     const pointer = { x: 0, y: 0, presence: 0, targetPresence: 0 }
 
