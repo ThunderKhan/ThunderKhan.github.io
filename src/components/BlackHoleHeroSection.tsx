@@ -221,16 +221,8 @@ export function BlackHoleHeroSection({
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false
     const saveData = 'connection' in navigator && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
-    const lowPower = coarsePointer || saveData || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
-
-    // The ray-marched disk is intentionally expensive: on phones it can
-    // monopolize the GPU and make the whole page feel frozen. Keep the
-    // cinematic layer for desktop-class devices and let CSS handle the
-    // mobile fallback instead.
-    if (reduced || lowPower) {
-      canvas.style.display = 'none'
-      return
-    }
+    const mobile = coarsePointer || window.innerWidth < 768
+    const lowPower = mobile || saveData || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
 
     const gl = canvas.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'high-performance'})
     if (!gl) { canvas.style.display='none'; return }
@@ -252,11 +244,11 @@ export function BlackHoleHeroSection({
     names.forEach(n=>U[n]=gl.getUniformLocation(program,n))
     const vbo=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vbo); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW)
     gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0)
-    let width=0,height=0,clock=reduced?6:0,last=0,raf=0,running=true,visible=true,frame=0
+    let width=0,height=0,clock=reduced?6:0,last=0,lastFrame=0,raf=0,running=true,visible=true,frame=0
 
     const resize=()=>{
       const r=host.getBoundingClientRect(); const C=props.current
-      const dpr=Math.min(window.devicePixelRatio||1,Math.max(1,C.maxDpr)); const scale=Math.min(1,Math.max(.42,C.resolution))
+      const dpr=Math.min(window.devicePixelRatio||1,Math.max(1,C.maxDpr)); const scale=Math.min(1,Math.max(.32,C.resolution * (mobile ? .62 : 1)))
       const w=Math.max(2,Math.round(r.width*dpr*scale)), h=Math.max(2,Math.round(r.height*dpr*scale))
       if(w===width&&h===height)return; width=w;height=h;canvas.width=w;canvas.height=h;canvas.style.width=r.width+'px';canvas.style.height=r.height+'px'
     }
@@ -271,11 +263,15 @@ export function BlackHoleHeroSection({
       const RX=rx*cr+ux*sr,RY=ry*cr+uy*sr,RZ=rz*cr+uz*sr,UX=-rx*sr+ux*cr,UY=-ry*sr+uy*cr,UZ=-rz*sr+uz*cr
       const hot=hexToLinear(C.hotColor),mid=hexToLinear(C.midColor),cool=hexToLinear(C.coolColor),j=HALTON[frame%HALTON.length]
       gl.uniform2f(U.uRes,width,height);gl.uniform1f(U.uTime,t);gl.uniform3f(U.uCamPos,camX,camY,camZ);gl.uniform3f(U.uRight,RX,RY,RZ);gl.uniform3f(U.uUp,UX,UY,UZ);gl.uniform3f(U.uFwd,fx,fy,fz)
-      gl.uniform1f(U.uTanHalf,Math.tan(Math.max(8,Math.min(110,C.fov))*.5*RAD));gl.uniform2f(U.uFocus,C.focus[0],1-C.focus[1]);gl.uniform1f(U.uSteps,Math.max(80,Math.min(360,Math.round(C.steps))))
+      gl.uniform1f(U.uTanHalf,Math.tan(Math.max(8,Math.min(110,C.fov))*.5*RAD));gl.uniform2f(U.uFocus,C.focus[0],1-C.focus[1]);gl.uniform1f(U.uSteps,Math.max(48,Math.min(360,Math.round(C.steps * (mobile ? .34 : lowPower ? .55 : 1)))))
       gl.uniform1f(U.uSpin,C.spinSpeed*6.2831853);gl.uniform1f(U.uBright,C.brightness);gl.uniform3f(U.uHot,...hot);gl.uniform3f(U.uMid,...mid);gl.uniform3f(U.uCool,...cool);gl.uniform1f(U.uGlow,C.glow);gl.uniform1f(U.uExposure,C.exposure);gl.uniform1f(U.uVignette,C.vignette);gl.uniform2f(U.uJitter,j[0]-.5,j[1]-.5);gl.uniform1f(U.uSeed,(frame%64)*17.13)
       gl.drawArrays(gl.TRIANGLES,0,3);frame++
     }
-    const tick=(now:number)=>{ if(!running)return; raf=requestAnimationFrame(tick); if(!visible){last=now;return}; const dt=last?Math.min(.05,(now-last)/1000):0;last=now;if(!props.current.paused&&!reduced)clock+=dt;render(clock) }
+    const tick=(now:number)=>{ if(!running)return; raf=requestAnimationFrame(tick); if(!visible){last=now;return}; const dt=last?Math.min(.05,(now-last)/1000):0;last=now;if(!props.current.paused&&!reduced)clock+=dt;
+        // Mobile renders at ~24fps, desktop keeps the normal animation cadence.
+        if (mobile && now - lastFrame < 40) return
+        lastFrame = now
+        render(clock) }
     const ro=new ResizeObserver(()=>render(clock));ro.observe(host)
     const io=new IntersectionObserver(e=>visible=e[0]?.isIntersecting??true,{threshold:0});io.observe(host)
     render(clock); if(!reduced)raf=requestAnimationFrame(tick)
