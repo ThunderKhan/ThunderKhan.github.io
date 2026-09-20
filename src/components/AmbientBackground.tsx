@@ -382,6 +382,14 @@ function HalftoneShader() {
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches
+    const saveData = 'connection' in navigator && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
+    const lowPower = coarsePointer || saveData || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
+
+    // Keep the animated WebGL background off phones and data-saver devices.
+    // This shader is decorative, so a static CSS fallback is preferable to
+    // consuming a continuous GPU frame budget.
+    if (lowPower) return
+
     const pointer = { x: 0, y: 0, presence: 0, targetPresence: 0 }
 
     const onPointerMove = (event: PointerEvent) => {
