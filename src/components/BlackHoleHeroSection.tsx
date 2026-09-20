@@ -219,6 +219,19 @@ export function BlackHoleHeroSection({
     const canvas = canvasRef.current
     if (!host || !canvas) return
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false
+    const saveData = 'connection' in navigator && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
+    const lowPower = coarsePointer || saveData || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
+
+    // The ray-marched disk is intentionally expensive: on phones it can
+    // monopolize the GPU and make the whole page feel frozen. Keep the
+    // cinematic layer for desktop-class devices and let CSS handle the
+    // mobile fallback instead.
+    if (reduced || lowPower) {
+      canvas.style.display = 'none'
+      return
+    }
+
     const gl = canvas.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'high-performance'})
     if (!gl) { canvas.style.display='none'; return }
 
