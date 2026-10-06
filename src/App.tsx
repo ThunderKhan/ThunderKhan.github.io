@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useCallback, useState } from 'react'
 import { Navigation } from './components/Navigation'
 import { Hero } from './components/Hero'
 import { About } from './components/About'
@@ -11,13 +11,21 @@ import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { AmbientBackground } from './components/AmbientBackground'
 import { FloatingDock } from './components/FloatingDock'
-import { BlogIndex } from './components/BlogIndex'
-import { BlogPostPage } from './components/BlogPostPage'
-import { NotFoundPage } from './components/NotFoundPage'
-import { CommandPalette } from './components/CommandPalette'
-import { getBlogPost } from './data/blog-posts'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
 import { useRouterPath } from './hooks/useRouterPath'
+
+const BlogIndex = lazy(() =>
+  import('./components/BlogIndex').then(({ BlogIndex }) => ({ default: BlogIndex })),
+)
+const BlogRoute = lazy(() =>
+  import('./components/BlogRoute').then(({ BlogRoute }) => ({ default: BlogRoute })),
+)
+const NotFoundPage = lazy(() =>
+  import('./components/NotFoundPage').then(({ NotFoundPage }) => ({ default: NotFoundPage })),
+)
+const CommandPalette = lazy(() =>
+  import('./components/CommandPalette').then(({ CommandPalette }) => ({ default: CommandPalette })),
+)
 
 function decodeBlogSlug(path: string) {
   if (!path.startsWith('/blog/')) return null
@@ -29,14 +37,34 @@ function decodeBlogSlug(path: string) {
   }
 }
 
+function RouteLoadingSkeleton() {
+  return (
+    <section
+      className="mx-auto min-h-[70vh] w-full max-w-6xl animate-pulse px-4 pb-24 pt-28 sm:px-6 sm:pt-32"
+      aria-busy="true"
+      aria-label="Loading page content"
+    >
+      <div className="max-w-3xl">
+        <div className="h-3 w-24 rounded-full bg-muted" />
+        <div className="mt-5 h-10 w-full max-w-2xl rounded-xl bg-muted" />
+        <div className="mt-3 h-10 w-4/5 max-w-xl rounded-xl bg-muted" />
+        <div className="mt-6 h-4 w-full max-w-2xl rounded-full bg-muted" />
+        <div className="mt-3 h-4 w-2/3 max-w-lg rounded-full bg-muted" />
+      </div>
+      <div className="mt-12 h-72 rounded-3xl border border-border bg-card/60" />
+    </section>
+  )
+}
+
 export default function App() {
   const { mode, selectMode } = useBackgroundMode()
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const path = useRouterPath()
-  const isBlog = path === '/blog' || path.startsWith('/blog/')
+  const isBlogPostPath = path.startsWith('/blog/')
+  const isBlog = path === '/blog' || isBlogPostPath
   const blogSlug = decodeBlogSlug(path)
-  const post = blogSlug ? getBlogPost(blogSlug) : undefined
-  const isNotFound = (path.startsWith('/blog/') && !post) || (!isBlog && path !== '/')
+  const isNotFound = (isBlogPostPath && !blogSlug) || (!isBlog && path !== '/')
+  const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), [])
 
   return (
     <>
@@ -50,36 +78,42 @@ export default function App() {
       <Navigation
         backgroundMode={mode}
         onSelectBackground={selectMode}
-        onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+        onOpenCommandPalette={openCommandPalette}
         isBlog={isBlog}
       />
       <main id="main">
-        {isNotFound ? (
-          <NotFoundPage path={path} />
-        ) : path === '/blog' ? (
-          <BlogIndex />
-        ) : post ? (
-          <BlogPostPage post={post} />
-        ) : (
-          <>
-            <Hero />
-            <About />
-            <Projects />
-            <OpenSource />
-            <Skills />
-            <LatestWriting />
-            <Education />
-            <Contact />
-          </>
-        )}
+        <Suspense fallback={<RouteLoadingSkeleton />}>
+          {isNotFound ? (
+            <NotFoundPage path={path} />
+          ) : path === '/blog' ? (
+            <BlogIndex />
+          ) : blogSlug ? (
+            <BlogRoute slug={blogSlug} path={path} />
+          ) : (
+            <>
+              <Hero />
+              <About />
+              <Projects />
+              <OpenSource />
+              <Skills />
+              <LatestWriting />
+              <Education />
+              <Contact />
+            </>
+          )}
+        </Suspense>
       </main>
       <Footer />
       {!isBlog && !isNotFound && <FloatingDock />}
-      <CommandPalette
-        open={commandPaletteOpen}
-        onOpenChange={setCommandPaletteOpen}
-        onSelectBackground={selectMode}
-      />
+      {commandPaletteOpen ? (
+        <Suspense fallback={null}>
+          <CommandPalette
+            open
+            onOpenChange={setCommandPaletteOpen}
+            onSelectBackground={selectMode}
+          />
+        </Suspense>
+      ) : null}
     </>
   )
 }

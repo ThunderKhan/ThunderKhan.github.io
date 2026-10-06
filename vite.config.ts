@@ -7,4 +7,25 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/',
   plugins: [react(), tailwindcss()],
+  build: {
+    minify: 'esbuild',
+    cssMinify: 'esbuild',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/scheduler/')
+          ) {
+            return 'react-vendor'
+          }
+          if (id.includes('/lucide-react/')) return 'icons'
+          return 'vendor'
+        },
+      },
+    },
+  },
 })

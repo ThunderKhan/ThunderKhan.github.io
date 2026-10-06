@@ -91,10 +91,11 @@ function addBlogPostingJsonLd(html, post, canonicalUrl, image) {
 }
 
 function replaceRoot(html, content) {
-  return html.replace(
-    /<div id="root"><\/div>/i,
-    `<div id="root" data-prerendered="true">${content}</div>`,
-  )
+  const prerenderedRoot = `<div id="root" data-prerendered="true">${content}</div>`
+  const shellRoot = /<div id="root">[\s\S]*?<!-- \/initial-root -->\s*<\/div>/i
+
+  if (shellRoot.test(html)) return html.replace(shellRoot, prerenderedRoot)
+  return html.replace(/<div id="root"><\/div>/i, prerenderedRoot)
 }
 
 function propertyName(node) {
@@ -188,7 +189,7 @@ function renderStaticArticle(post) {
     )
     .join('')
   const cover = post.cover
-    ? `<div class="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60"><img src="${escapeHtml(post.cover)}" alt="${escapeHtml(`${post.title} cover`)}" class="w-full object-cover" /></div>`
+    ? `<div class="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60"><img src="${escapeHtml(post.cover)}" alt="${escapeHtml(`${post.title} cover`)}" loading="eager" fetchpriority="high" decoding="async" class="w-full object-cover" /></div>`
     : ''
   const body = post.content.map(renderBlock).join('')
 

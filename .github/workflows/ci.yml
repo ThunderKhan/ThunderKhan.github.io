@@ -47,3 +47,42 @@ jobs:
 
       - name: Check links
         run: npm run check:links
+
+      - name: Run Lighthouse audit
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --strictPort > /tmp/portfolio-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill "$PREVIEW_PID" 2>/dev/null || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/portfolio-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          LIGHTHOUSE_EXIT=0
+          npx --yes lighthouse@13.4.1 http://127.0.0.1:4173/ \
+            --preset=desktop \
+            --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json \
+            --output-path=./lighthouse-report.json || LIGHTHOUSE_EXIT=$?
+
+          if [ -f lighthouse-report.json ]; then
+            node scripts/print-lighthouse-summary.mjs lighthouse-report.json
+          fi
+
+          exit "$LIGHTHOUSE_EXIT"
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse-report.json

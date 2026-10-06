@@ -38,11 +38,13 @@ function scrollToId(id: string) {
 export function CommandPalette({ open, onOpenChange, onSelectBackground }: CommandPaletteProps) {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   const close = useCallback(() => {
     onOpenChange(false)
     setQuery('')
+    setDebouncedQuery('')
     setActiveIndex(0)
   }, [onOpenChange])
 
@@ -140,22 +142,36 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
     [onSelectBackground],
   )
 
-  const normalized = query.trim().toLowerCase()
-  const easterEgg = normalized === 'sudo hire ayan'
-  const filtered = easterEgg
-    ? [
-        {
-          id: 'sudo-hire',
-          label: 'Access granted. Opening contact channel.',
-          hint: 'sudo ✓',
-          keywords: '',
-          Icon: TerminalSquare,
-          run: () => scrollToId('contact'),
-        },
-      ]
-    : commands.filter((command) =>
-        `${command.label} ${command.hint} ${command.keywords}`.toLowerCase().includes(normalized),
-      )
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query), 100)
+    return () => window.clearTimeout(timer)
+  }, [query])
+
+  const { easterEgg, filtered } = useMemo(() => {
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
+    const isEasterEgg = normalizedQuery === 'sudo hire ayan'
+    const matchingCommands = isEasterEgg
+      ? [
+          {
+            id: 'sudo-hire',
+            label: 'Access granted. Opening contact channel.',
+            hint: 'sudo ✓',
+            keywords: '',
+            Icon: TerminalSquare,
+            run: () => scrollToId('contact'),
+          },
+        ]
+      : commands.filter((command) =>
+          `${command.label} ${command.hint} ${command.keywords}`
+            .toLowerCase()
+            .includes(normalizedQuery),
+        )
+
+    return {
+      easterEgg: isEasterEgg,
+      filtered: matchingCommands,
+    }
+  }, [commands, debouncedQuery])
 
   useEffect(() => {
     if (!open) return
@@ -170,7 +186,7 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
 
   useEffect(() => {
     setActiveIndex(0)
-  }, [query])
+  }, [debouncedQuery])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

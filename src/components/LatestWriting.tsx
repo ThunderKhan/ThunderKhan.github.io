@@ -11,9 +11,12 @@ function formatDate(date: string) {
   })
 }
 
-export function LatestWriting() {
-  const latest = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date))[0]
+const latest = blogPosts.reduce<(typeof blogPosts)[number] | undefined>(
+  (current, post) => (!current || post.date > current.date ? post : current),
+  undefined,
+)
 
+export function LatestWriting() {
   if (!latest) return null
 
   return (
@@ -37,6 +40,7 @@ export function LatestWriting() {
                   src={latest.cover}
                   alt=""
                   loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
