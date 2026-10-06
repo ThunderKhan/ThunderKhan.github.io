@@ -360,11 +360,17 @@ function HalftoneShader() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gl = canvas.getContext('webgl', { alpha: false, antialias: false, powerPreference: mobile ? 'low-power' : 'high-performance' })
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches
+    const mobile = coarsePointer || window.innerWidth < 768
+    const gl = canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      powerPreference: mobile ? 'low-power' : 'high-performance',
+    })
     if (!gl) return
 
     const vertex = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER)
-    const fragmentSource = (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768) ? MOBILE_FRAGMENT_SHADER : FRAGMENT_SHADER
+    const fragmentSource = mobile ? MOBILE_FRAGMENT_SHADER : FRAGMENT_SHADER
     const fragment = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource)
     if (!vertex || !fragment) return
 
@@ -418,8 +424,6 @@ function HalftoneShader() {
     gl.uniform4f(transform, 2926.0, 0.0, 0.0, 0.0)
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const coarsePointer = window.matchMedia('(pointer: coarse)').matches
-    const mobile = coarsePointer || window.innerWidth < 768
     const pointer = { x: 0, y: 0, presence: 0, targetPresence: 0 }
 
     const onPointerMove = (event: PointerEvent) => {
