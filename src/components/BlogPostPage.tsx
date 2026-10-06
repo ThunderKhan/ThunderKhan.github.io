@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, Clock3, Github } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import siteConfig from '../config/site.json'
 import type { BlogBlock, BlogPost } from '../data/blogs'
 import { getHeadingEntries } from '../lib/blog-headings.js'
@@ -98,8 +98,11 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
   }, [post])
 
   const hasRelatedLinks = Boolean(post.repositoryUrl || post.crossPosts?.length)
-  const headings = getHeadingEntries(post.content)
-  const headingByIndex = new Map(headings.map(({ index, id }) => [index, id]))
+  const headings = useMemo(() => getHeadingEntries(post.content), [post.content])
+  const headingByIndex = useMemo(
+    () => new Map(headings.map(({ index, id }) => [index, id])),
+    [headings],
+  )
   const showTableOfContents = headings.length >= 4
 
   return (
@@ -150,7 +153,14 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
 
       {post.cover ? (
         <div className="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60 shadow-2xl shadow-accent/5">
-          <img src={post.cover} alt={`${post.title} cover`} className="w-full object-cover" />
+          <img
+            src={post.cover}
+            alt={`${post.title} cover`}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="w-full object-cover"
+          />
         </div>
       ) : null}
 
