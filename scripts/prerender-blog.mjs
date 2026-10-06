@@ -91,10 +91,11 @@ function addBlogPostingJsonLd(html, post, canonicalUrl, image) {
 }
 
 function replaceRoot(html, content) {
-  return html.replace(
-    /<div id="root"><\/div>/i,
-    `<div id="root" data-prerendered="true">${content}</div>`,
-  )
+  const prerenderedRoot = `<div id="root" data-prerendered="true">${content}</div>`
+  const shellRoot = /<div id="root">[\s\S]*?<!-- \/initial-root -->\s*<\/div>/i
+
+  if (shellRoot.test(html)) return html.replace(shellRoot, prerenderedRoot)
+  return html.replace(/<div id="root"><\/div>/i, prerenderedRoot)
 }
 
 function propertyName(node) {
