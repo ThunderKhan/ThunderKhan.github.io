@@ -67,7 +67,7 @@ jobs:
           done
 
           LIGHTHOUSE_EXIT=0
-          npx --yes lighthouse@12.8.2 http://127.0.0.1:4173/ \
+          npx --yes lighthouse@13.4.1 http://127.0.0.1:4173/ \
             --preset=desktop \
             --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding" \
             --only-categories=performance,accessibility,best-practices,seo \
