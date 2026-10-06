@@ -15,8 +15,6 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined
-          if (id.includes('/motion/')) return 'motion'
-          if (id.includes('/lucide-react/')) return 'icons'
           if (
             id.includes('/react/') ||
             id.includes('/react-dom/') ||
@@ -24,6 +22,7 @@ export default defineConfig({
           ) {
             return 'react-vendor'
           }
+          if (id.includes('/lucide-react/')) return 'icons'
           return 'vendor'
         },
       },
