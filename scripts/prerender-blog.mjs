@@ -188,7 +188,7 @@ function renderStaticArticle(post) {
     )
     .join('')
   const cover = post.cover
-    ? `<div class="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60"><img src="${escapeHtml(post.cover)}" alt="${escapeHtml(`${post.title} cover`)}" class="w-full object-cover" /></div>`
+    ? `<div class="mx-auto mt-10 max-w-5xl overflow-hidden rounded-2xl border border-border bg-card/60"><img src="${escapeHtml(post.cover)}" alt="${escapeHtml(`${post.title} cover`)}" loading="eager" fetchpriority="high" decoding="async" class="w-full object-cover" /></div>`
     : ''
   const body = post.content.map(renderBlock).join('')
 
