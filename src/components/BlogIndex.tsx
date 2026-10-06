@@ -51,6 +51,7 @@ export function BlogIndex() {
                     alt=""
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/25 to-transparent" />
                 </div>
