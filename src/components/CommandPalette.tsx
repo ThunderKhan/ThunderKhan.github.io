@@ -44,6 +44,7 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
   const close = useCallback(() => {
     onOpenChange(false)
     setQuery('')
+    setDebouncedQuery('')
     setActiveIndex(0)
   }, [onOpenChange])
 
@@ -146,7 +147,7 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
     return () => window.clearTimeout(timer)
   }, [query])
 
-  const { normalized, easterEgg, filtered } = useMemo(() => {
+  const { easterEgg, filtered } = useMemo(() => {
     const normalizedQuery = debouncedQuery.trim().toLowerCase()
     const isEasterEgg = normalizedQuery === 'sudo hire ayan'
     const matchingCommands = isEasterEgg
@@ -167,7 +168,6 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
         )
 
     return {
-      normalized: normalizedQuery,
       easterEgg: isEasterEgg,
       filtered: matchingCommands,
     }
@@ -207,8 +207,6 @@ export function CommandPalette({ open, onOpenChange, onSelectBackground }: Comma
   }, [close, open, onOpenChange])
 
   if (!open) return null
-
-  void normalized
 
   const runCommand = (command: Command) => {
     command.run()
