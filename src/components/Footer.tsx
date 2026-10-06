@@ -21,7 +21,11 @@ export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="relative border-t border-border">
+    <footer className="relative z-10 border-t border-border bg-background/95 shadow-[0_-20px_60px_rgba(0,0,0,0.16)] backdrop-blur-2xl">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 -top-12 h-12 bg-gradient-to-b from-transparent to-background/95"
+      />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent"
