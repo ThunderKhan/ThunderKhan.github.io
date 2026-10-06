@@ -60,9 +60,10 @@ export default function App() {
   const { mode, selectMode } = useBackgroundMode()
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const path = useRouterPath()
-  const isBlog = path === '/blog' || path.startsWith('/blog/')
+  const isBlogPostPath = path.startsWith('/blog/')
+  const isBlog = path === '/blog' || isBlogPostPath
   const blogSlug = decodeBlogSlug(path)
-  const isNotFound = !isBlog && path !== '/'
+  const isNotFound = (isBlogPostPath && !blogSlug) || (!isBlog && path !== '/')
   const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), [])
 
   return (
