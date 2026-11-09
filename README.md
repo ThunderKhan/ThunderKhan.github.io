@@ -20,6 +20,10 @@ A fast, editorial-style portfolio for projects, open-source work, technical writ
 
 ---
 
+## Workbench redesign preview
+
+The `redesign/opentag-inspired` branch explores a warmer, more personal direction with an interactive project workbench, original SVG identity, Fraunces display type, and a quieter canvas. [See screenshots and review notes](docs/redesign/README.md).
+
 ## Why this portfolio?
 
 This repository powers my personal developer portfolio and writing site.
@@ -62,7 +66,7 @@ ayankhan.me
 | Styling | Tailwind CSS 4 |
 | Motion | Motion with reduced-motion support |
 | Icons | Lucide React |
-| Typography | self-hosted Manrope + IBM Plex Mono |
+| Typography | self-hosted Fraunces + Manrope + IBM Plex Mono |
 | Portfolio content | `src/data/portfolio.ts` |
 | Blog content | `src/data/blogs.ts` |
 | Blog route + sitemap generation | `scripts/prerender-blog.mjs` |

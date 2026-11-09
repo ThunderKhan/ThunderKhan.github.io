@@ -76,7 +76,7 @@ export const projects: Project[] = [
     ],
     technologies: ['C++20', 'CMake File API', 'CTest JSON', 'Dependency graphs', 'CLI', 'CI', 'ASan/UBSan'],
     githubUrl: 'https://github.com/ThunderKhan/diff2test',
-    caseStudyUrl: 'https://ayankhan.me/blog/i-built-c-test-impact-analysis-with-zero-runtime-dependencies',
+    caseStudyUrl: 'https://ayankhan.me/blog/cpp-test-impact-analysis-zero-runtime-dependencies',
   },
   {
     title: 'webclerk',
@@ -206,7 +206,7 @@ export const openSource: TimelineEntry[] = [
       'Built a single-file C++20 regression-test selector that maps changed paths to CTest tests using existing CMake and compiler dependency metadata. The tool makes narrow selections only when evidence is sufficient and otherwise widens conservatively, with explain output, reproducibility checks, sanitizers, and deterministic CI verification.',
     links: [
       { label: 'Repository', url: 'https://github.com/ThunderKhan/diff2test' },
-      { label: 'Case study', url: 'https://ayankhan.me/blog/i-built-c-test-impact-analysis-with-zero-runtime-dependencies' },
+      { label: 'Case study', url: 'https://ayankhan.me/blog/cpp-test-impact-analysis-zero-runtime-dependencies' },
     ],
   },
   {
