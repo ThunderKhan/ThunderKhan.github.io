@@ -1,30 +1,35 @@
-import { lazy, Suspense, useCallback, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { PortfolioHome } from './components/PortfolioHome'
 import { Navigation } from './components/Navigation'
-import { Hero } from './components/Hero'
-import { About } from './components/About'
-import { Projects } from './components/Projects'
-import { OpenSource } from './components/OpenSource'
-import { Skills } from './components/Skills'
-import { LatestWriting } from './components/LatestWriting'
-import { Education } from './components/Education'
-import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
-import { AmbientBackground } from './components/AmbientBackground'
-import { FloatingDock } from './components/FloatingDock'
 import { useBackgroundMode } from './hooks/useBackgroundMode'
 import { useRouterPath } from './hooks/useRouterPath'
 
+const AmbientBackground = lazy(() =>
+  import('./components/AmbientBackground').then(({ AmbientBackground }) => ({
+    default: AmbientBackground,
+  })),
+)
+
 const BlogIndex = lazy(() =>
-  import('./components/BlogIndex').then(({ BlogIndex }) => ({ default: BlogIndex })),
+  import('./components/BlogIndex').then(({ BlogIndex }) => ({
+    default: BlogIndex,
+  })),
 )
 const BlogRoute = lazy(() =>
-  import('./components/BlogRoute').then(({ BlogRoute }) => ({ default: BlogRoute })),
+  import('./components/BlogRoute').then(({ BlogRoute }) => ({
+    default: BlogRoute,
+  })),
 )
 const NotFoundPage = lazy(() =>
-  import('./components/NotFoundPage').then(({ NotFoundPage }) => ({ default: NotFoundPage })),
+  import('./components/NotFoundPage').then(({ NotFoundPage }) => ({
+    default: NotFoundPage,
+  })),
 )
 const CommandPalette = lazy(() =>
-  import('./components/CommandPalette').then(({ CommandPalette }) => ({ default: CommandPalette })),
+  import('./components/CommandPalette').then(({ CommandPalette }) => ({
+    default: CommandPalette,
+  })),
 )
 
 function decodeBlogSlug(path: string) {
@@ -65,6 +70,17 @@ export default function App() {
   const blogSlug = decodeBlogSlug(path)
   const isNotFound = (isBlogPostPath && !blogSlug) || (!isBlog && path !== '/')
   const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), [])
+  useEffect(() => {
+    if (commandPaletteOpen) return
+    const shortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setCommandPaletteOpen(true)
+      }
+    }
+    window.addEventListener('keydown', shortcut)
+    return () => window.removeEventListener('keydown', shortcut)
+  }, [commandPaletteOpen])
 
   return (
     <>
@@ -74,13 +90,12 @@ export default function App() {
       >
         Skip to main content
       </a>
-      <AmbientBackground mode={mode} />
-      <Navigation
-        backgroundMode={mode}
-        onSelectBackground={selectMode}
-        onOpenCommandPalette={openCommandPalette}
-        isBlog={isBlog}
-      />
+      {mode !== 'quiet' && (
+        <Suspense fallback={null}>
+          <AmbientBackground mode={mode} />
+        </Suspense>
+      )}
+      <Navigation onOpenCommandPalette={openCommandPalette} isBlog={isBlog} />
       <main id="main">
         <Suspense fallback={<RouteLoadingSkeleton />}>
           {isNotFound ? (
@@ -90,21 +105,11 @@ export default function App() {
           ) : blogSlug ? (
             <BlogRoute slug={blogSlug} path={path} />
           ) : (
-            <>
-              <Hero />
-              <About />
-              <Projects />
-              <OpenSource />
-              <Skills />
-              <LatestWriting />
-              <Education />
-              <Contact />
-            </>
+            <PortfolioHome />
           )}
         </Suspense>
       </main>
       <Footer />
-      {!isBlog && !isNotFound && <FloatingDock />}
       {commandPaletteOpen ? (
         <Suspense fallback={null}>
           <CommandPalette

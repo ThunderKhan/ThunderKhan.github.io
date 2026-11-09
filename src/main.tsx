@@ -9,6 +9,9 @@ import '@fontsource/manrope/latin-800.css'
 import App from './App'
 import './fonts.css'
 import './index.css'
+import '@fontsource/fraunces/latin-400.css'
+import '@fontsource/fraunces/latin-400-italic.css'
+import './studio.css'
 
 const rootElement = document.getElementById('root')!
 

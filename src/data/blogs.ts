@@ -34,7 +34,7 @@ export const blogPosts: BlogPost[] = [
     readingTime: '16 min read',
     tags: ['C++', 'Testing', 'DevTools', 'Hackathon'],
     cover:
-      'https://raw.githubusercontent.com/ThunderKhan/diff2test/main/assets/diff2test-hero.png',
+      '/writing/diff2test-cover.webp',
     canonicalUrl:
       'https://ayankhan.me/blog/cpp-test-impact-analysis-zero-runtime-dependencies',
     crossPosts: [

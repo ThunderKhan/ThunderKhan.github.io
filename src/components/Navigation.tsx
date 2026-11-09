@@ -1,134 +1,142 @@
-import { useEffect, useState } from 'react'
-import { BookOpenText, Command, FileText, Moon, Sun } from 'lucide-react'
+import { StudioSpark } from './StudioSpark'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight, Menu, Moon, Search, Sun, X } from 'lucide-react'
 import { site } from '../data/portfolio'
 import { useTheme } from '../hooks/useTheme'
-import type { BackgroundMode } from '../hooks/useBackgroundMode'
-import { BackgroundSelector } from './BackgroundSelector'
 
-type NavigationProps = {
-  backgroundMode: BackgroundMode
-  onSelectBackground: (mode: BackgroundMode) => void
-  onOpenCommandPalette: () => void
-  isBlog?: boolean
-}
+type NavigationProps = { onOpenCommandPalette: () => void; isBlog?: boolean }
+const items = [
+  { label: 'Work', href: '#projects' },
+  { label: 'About', href: '#about' },
+  { label: 'Open source', href: '#open-source' },
+  { label: 'Writing', href: '/blog' },
+]
 
-/** Floating utility shell with a Linux-rice / desktop-panel feel. */
 export function Navigation({
-  backgroundMode,
-  onSelectBackground,
   onOpenCommandPalette,
   isBlog = false,
 }: NavigationProps) {
   const { theme, toggleTheme } = useTheme()
-  const [scrolled, setScrolled] = useState(false)
-
+  const [open, setOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
+    if (!open) return
+    const key = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+    const outside = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setOpen(false)
+    }
+    const desktop = window.matchMedia('(min-width: 601px)')
+    const resize = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false)
+    }
+    desktop.addEventListener('change', resize)
+    document.addEventListener('keydown', key)
+    document.addEventListener('pointerdown', outside)
+    return () => {
+      desktop.removeEventListener('change', resize)
+      document.removeEventListener('keydown', key)
+      document.removeEventListener('pointerdown', outside)
+    }
+  }, [open])
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-      <nav
-        aria-label="Utility"
-        className={`pointer-events-auto relative mx-auto grid h-14 w-full max-w-6xl grid-cols-[auto_1fr_auto] items-center rounded-[1.75rem] border px-3 shadow-[0_14px_45px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(255,255,255,0.04)] transition-[background-color,border-color,box-shadow] duration-300 sm:px-4 ${
-          scrolled
-            ? 'border-white/12 bg-background/28 backdrop-blur-2xl'
-            : 'border-white/10 bg-background/14 backdrop-blur-xl'
-        }`}
-      >
-        <a
-          href={isBlog ? '/' : '#hero'}
-          className="z-10 flex h-9 min-w-9 items-center justify-center rounded-full px-2 font-mono text-sm font-semibold tracking-widest text-foreground transition-colors hover:bg-card/55 hover:text-accent"
-          aria-label={`${site.name} — ${isBlog ? 'portfolio home' : 'back to top'}`}
-        >
-          {site.initials}
+    <header className="studio-header" ref={headerRef}>
+      <nav className="studio-nav" aria-label="Main navigation">
+        <a href="/" className="studio-brand" aria-label="Ayan Khan — home">
+          <StudioSpark className="brand-spark" />
+          {site.name}
+          <span className="brand-dot">.</span>
         </a>
-
-        <div className="hidden items-center justify-center gap-1.5 md:flex">
+        <div className="studio-nav-links">
+          {items.map((item) => (
+            <a
+              key={item.href}
+              href={
+                isBlog && item.href.startsWith('#')
+                  ? `/${item.href}`
+                  : item.href
+              }
+              aria-current={
+                isBlog && item.href === '/blog' ? 'page' : undefined
+              }
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+        <div className="studio-nav-actions">
           <button
-            type="button"
+            className="studio-icon-button search-trigger"
             onClick={onOpenCommandPalette}
             aria-label="Open command palette"
-            title="Command palette (Ctrl/⌘ K)"
-            className="group flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-black/14 px-3 text-xs font-medium text-foreground/85 backdrop-blur-md transition-colors hover:border-white/20 hover:bg-black/24 hover:text-foreground"
           >
-            <Command size={13} aria-hidden="true" />
-            <span className="hidden lg:inline">Command</span>
-            <kbd className="hidden rounded border border-white/10 bg-black/18 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground sm:inline">
-              ⌘K
-            </kbd>
+            <Search size={18} />
+            <kbd>⌘ K</kbd>
           </button>
-
-          <a
-            href="/blog"
-            className={`flex h-9 items-center gap-1.5 rounded-full border px-3 text-xs font-medium backdrop-blur-md transition-colors ${
-              isBlog
-                ? 'border-accent/45 bg-accent/10 text-accent'
-                : 'border-white/10 bg-black/14 text-foreground hover:border-white/20 hover:bg-black/24 hover:text-accent'
-            }`}
-          >
-            <BookOpenText size={13} aria-hidden="true" />
-            <span>Writing</span>
-          </a>
-
-          <a
-            href={site.resume}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-black/14 px-3 text-xs font-medium text-foreground backdrop-blur-md transition-colors hover:border-white/20 hover:bg-black/24 hover:text-accent"
-          >
-            <FileText size={13} aria-hidden="true" />
-            <span>Résumé</span>
-          </a>
-        </div>
-
-        <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
-          <div className="flex items-center gap-1 md:hidden">
-            <button
-              type="button"
-              onClick={onOpenCommandPalette}
-              aria-label="Open command palette"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/14 text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground"
-            >
-              <Command size={14} aria-hidden="true" />
-            </button>
-            <a
-              href="/blog"
-              aria-label="Writing"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/14 text-foreground backdrop-blur-md transition-colors hover:text-accent"
-            >
-              <BookOpenText size={14} aria-hidden="true" />
-            </a>
-            <a
-              href={site.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Résumé"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/14 text-foreground backdrop-blur-md transition-colors hover:text-accent"
-            >
-              <FileText size={14} aria-hidden="true" />
-            </a>
-          </div>
-
           <button
-            type="button"
+            className="studio-icon-button"
             onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/14 text-muted-foreground backdrop-blur-md transition-colors hover:border-white/20 hover:bg-black/24 hover:text-foreground"
+            aria-label={
+              theme === 'dark'
+                ? 'Switch to light theme'
+                : 'Switch to dark theme'
+            }
           >
-            {theme === 'dark' ? (
-              <Sun size={15} aria-hidden="true" />
-            ) : (
-              <Moon size={15} aria-hidden="true" />
-            )}
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-
-          <BackgroundSelector mode={backgroundMode} onSelect={onSelectBackground} />
+          <a
+            className="studio-button small nav-contact"
+            href={isBlog ? '/#contact' : '#contact'}
+          >
+            Let’s talk <ArrowUpRight size={15} />
+          </a>
+          <button
+            ref={toggleRef}
+            className="studio-icon-button mobile-menu-toggle"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="studio-mobile-menu"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </nav>
+      {open && (
+        <nav
+          className="studio-mobile-menu"
+          id="studio-mobile-menu"
+          aria-label="Mobile navigation"
+        >
+          {items.map((item) => (
+            <a
+              key={item.href}
+              href={
+                isBlog && item.href.startsWith('#')
+                  ? `/${item.href}`
+                  : item.href
+              }
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+          <a href={site.resume}>
+            Download résumé <ArrowUpRight size={16} />
+          </a>
+          <a
+            href={isBlog ? '/#contact' : '#contact'}
+            onClick={() => setOpen(false)}
+          >
+            Let’s talk
+          </a>
+        </nav>
+      )}
     </header>
   )
 }
