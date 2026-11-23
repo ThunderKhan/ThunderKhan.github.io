@@ -106,7 +106,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
   const showTableOfContents = headings.length >= 4
 
   return (
-    <article className="folio-article mx-auto min-h-screen w-full max-w-5xl px-5 pb-24 pt-12 sm:px-8">
+    <article className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
       <div className="mx-auto max-w-3xl">
         <a
           href="/blog"

@@ -1,8 +1,17 @@
-import { lazy, Suspense } from 'react'
-import { Moon, Sun } from 'lucide-react'
-import { PortfolioHome } from './components/PortfolioHome'
-import { links, site } from './data/portfolio'
-import { useTheme } from './hooks/useTheme'
+import { lazy, Suspense, useCallback, useState } from 'react'
+import { Navigation } from './components/Navigation'
+import { Hero } from './components/Hero'
+import { About } from './components/About'
+import { Projects } from './components/Projects'
+import { OpenSource } from './components/OpenSource'
+import { Skills } from './components/Skills'
+import { LatestWriting } from './components/LatestWriting'
+import { Education } from './components/Education'
+import { Contact } from './components/Contact'
+import { Footer } from './components/Footer'
+import { AmbientBackground } from './components/AmbientBackground'
+import { FloatingDock } from './components/FloatingDock'
+import { useBackgroundMode } from './hooks/useBackgroundMode'
 import { useRouterPath } from './hooks/useRouterPath'
 
 const BlogIndex = lazy(() =>
@@ -14,6 +23,10 @@ const BlogRoute = lazy(() =>
 const NotFoundPage = lazy(() =>
   import('./components/NotFoundPage').then(({ NotFoundPage }) => ({ default: NotFoundPage })),
 )
+const CommandPalette = lazy(() =>
+  import('./components/CommandPalette').then(({ CommandPalette }) => ({ default: CommandPalette })),
+)
+
 function decodeBlogSlug(path: string) {
   if (!path.startsWith('/blog/')) return null
 
@@ -44,12 +57,15 @@ function RouteLoadingSkeleton() {
 }
 
 export default function App() {
-  const { theme, toggleTheme } = useTheme()
+  const { mode, selectMode } = useBackgroundMode()
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const path = useRouterPath()
   const isBlogPostPath = path.startsWith('/blog/')
   const isBlog = path === '/blog' || isBlogPostPath
   const blogSlug = decodeBlogSlug(path)
   const isNotFound = (isBlogPostPath && !blogSlug) || (!isBlog && path !== '/')
+  const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), [])
+
   return (
     <>
       <a
@@ -58,15 +74,13 @@ export default function App() {
       >
         Skip to main content
       </a>
-      <header className="folio-nav">
-        <a href="/" className="monogram" aria-label="Ayan Khan home">ak<span>.</span></a>
-        <nav aria-label="Main navigation">
-          <a href="/#projects">Work</a><a href="/#experience">Experience</a><a href="/blog">Writing</a><a href="/#about">About</a>
-        </nav>
-        <button type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
-      </header>
+      <AmbientBackground mode={mode} />
+      <Navigation
+        backgroundMode={mode}
+        onSelectBackground={selectMode}
+        onOpenCommandPalette={openCommandPalette}
+        isBlog={isBlog}
+      />
       <main id="main">
         <Suspense fallback={<RouteLoadingSkeleton />}>
           {isNotFound ? (
@@ -76,14 +90,30 @@ export default function App() {
           ) : blogSlug ? (
             <BlogRoute slug={blogSlug} path={path} />
           ) : (
-            <PortfolioHome />
+            <>
+              <Hero />
+              <About />
+              <Projects />
+              <OpenSource />
+              <Skills />
+              <LatestWriting />
+              <Education />
+              <Contact />
+            </>
           )}
         </Suspense>
       </main>
-      <footer className="folio-footer" id="contact">
-        <span>{site.name} · India</span>
-        <div><a href={`mailto:${links.email}`}>Email</a><a href={links.github}>GitHub</a><a href={links.linkedin}>LinkedIn</a></div>
-      </footer>
+      <Footer />
+      {!isBlog && !isNotFound && <FloatingDock />}
+      {commandPaletteOpen ? (
+        <Suspense fallback={null}>
+          <CommandPalette
+            open
+            onOpenChange={setCommandPaletteOpen}
+            onSelectBackground={selectMode}
+          />
+        </Suspense>
+      ) : null}
     </>
   )
 }

@@ -21,7 +21,7 @@ function scrollToHash(hash: string) {
 }
 
 export function useRouterPath() {
-  const [path, setPath] = useState(() => typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname))
+  const [path, setPath] = useState(() => normalizePath(window.location.pathname))
 
   useEffect(() => {
     const syncPath = () => setPath(normalizePath(window.location.pathname))
