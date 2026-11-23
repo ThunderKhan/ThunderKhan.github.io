@@ -1,6 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import ts from 'typescript'
+import { createElement } from 'react'
+import { renderToString } from 'react-dom/server'
+import { createServer } from 'vite'
 import siteConfig from '../src/config/site.json' with { type: 'json' }
 
 const ROOT = process.cwd()
@@ -307,6 +310,15 @@ async function writeRoute(route, html) {
 async function main() {
   const template = await fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf8')
   const posts = await readBlogPosts()
+
+  const server = await createServer({ server: { middlewareMode: true, hmr: false } })
+  try {
+    const { default: App } = await server.ssrLoadModule('/src/App.tsx')
+    const homepage = renderToString(createElement(App))
+    await fs.writeFile(path.join(DIST_DIR, 'index.html'), replaceRoot(template, homepage))
+  } finally {
+    await server.close()
+  }
 
   await writeRoute(siteConfig.blog.path, renderBlogIndex(template))
 
