@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 type Theme = 'light' | 'dark'
 
 function getInitialTheme(): Theme {
-  return typeof document !== 'undefined' && document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
 /**

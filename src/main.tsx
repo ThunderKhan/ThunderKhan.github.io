@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { LazyMotion, MotionConfig, domAnimation } from 'motion/react'
 import '@fontsource/manrope/latin-400.css'
 import '@fontsource/manrope/latin-500.css'
 import '@fontsource/manrope/latin-600.css'
@@ -8,7 +9,6 @@ import '@fontsource/manrope/latin-800.css'
 import App from './App'
 import './fonts.css'
 import './index.css'
-import './profile.css'
 
 const rootElement = document.getElementById('root')!
 
@@ -21,6 +21,10 @@ if (rootElement.dataset.prerendered === 'true') {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">
+        <App />
+      </MotionConfig>
+    </LazyMotion>
   </StrictMode>,
 )

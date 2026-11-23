@@ -1,6 +1,17 @@
 import { lazy, Suspense, useCallback, useState } from 'react'
-import { ProfileHome } from './components/ProfileHome'
-import { CommandPalette } from './components/CommandPalette'
+import { Navigation } from './components/Navigation'
+import { Hero } from './components/Hero'
+import { About } from './components/About'
+import { Projects } from './components/Projects'
+import { OpenSource } from './components/OpenSource'
+import { Skills } from './components/Skills'
+import { LatestWriting } from './components/LatestWriting'
+import { Education } from './components/Education'
+import { Contact } from './components/Contact'
+import { Footer } from './components/Footer'
+import { AmbientBackground } from './components/AmbientBackground'
+import { FloatingDock } from './components/FloatingDock'
+import { useBackgroundMode } from './hooks/useBackgroundMode'
 import { useRouterPath } from './hooks/useRouterPath'
 
 const BlogIndex = lazy(() =>
@@ -12,6 +23,10 @@ const BlogRoute = lazy(() =>
 const NotFoundPage = lazy(() =>
   import('./components/NotFoundPage').then(({ NotFoundPage }) => ({ default: NotFoundPage })),
 )
+const CommandPalette = lazy(() =>
+  import('./components/CommandPalette').then(({ CommandPalette }) => ({ default: CommandPalette })),
+)
+
 function decodeBlogSlug(path: string) {
   if (!path.startsWith('/blog/')) return null
 
@@ -42,6 +57,7 @@ function RouteLoadingSkeleton() {
 }
 
 export default function App() {
+  const { mode, selectMode } = useBackgroundMode()
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const path = useRouterPath()
   const isBlogPostPath = path.startsWith('/blog/')
@@ -58,7 +74,13 @@ export default function App() {
       >
         Skip to main content
       </a>
-      {path !== '/' && <nav className="article-nav" aria-label="Site navigation"><a href="/">← Ayan Khan</a><a href="/blog">Writing</a></nav>}
+      <AmbientBackground mode={mode} />
+      <Navigation
+        backgroundMode={mode}
+        onSelectBackground={selectMode}
+        onOpenCommandPalette={openCommandPalette}
+        isBlog={isBlog}
+      />
       <main id="main">
         <Suspense fallback={<RouteLoadingSkeleton />}>
           {isNotFound ? (
@@ -68,11 +90,30 @@ export default function App() {
           ) : blogSlug ? (
             <BlogRoute slug={blogSlug} path={path} />
           ) : (
-            <ProfileHome openCommands={openCommandPalette} />
+            <>
+              <Hero />
+              <About />
+              <Projects />
+              <OpenSource />
+              <Skills />
+              <LatestWriting />
+              <Education />
+              <Contact />
+            </>
           )}
         </Suspense>
       </main>
-      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
+      <Footer />
+      {!isBlog && !isNotFound && <FloatingDock />}
+      {commandPaletteOpen ? (
+        <Suspense fallback={null}>
+          <CommandPalette
+            open
+            onOpenChange={setCommandPaletteOpen}
+            onSelectBackground={selectMode}
+          />
+        </Suspense>
+      ) : null}
     </>
   )
 }

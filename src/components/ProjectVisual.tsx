@@ -155,19 +155,7 @@ function HeatMapVisual() {
   )
 }
 
-function CampusMapVisual() {
-  return (
-    <VisualFrame>
-      <figure className="w-full max-w-lg overflow-hidden rounded-xl border border-border bg-card">
-        <img src="/projects/iet-ground.webp" alt="" loading="lazy" className="w-full bg-white" />
-        <figcaption className="px-4 py-3 font-mono text-xs text-muted-foreground">IET building · Ground floor</figcaption>
-      </figure>
-    </VisualFrame>
-  )
-}
-
 const visuals: Record<ProjectVisualKind, () => React.ReactElement> = {
-  'campus-map': CampusMapVisual,
   'test-impact': TestImpactVisual,
   webmcp: WebMcpVisual,
   'fraud-graph': FraudGraphVisual,

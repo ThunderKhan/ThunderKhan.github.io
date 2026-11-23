@@ -6,16 +6,19 @@ import {
   Github,
   Linkedin,
   Search,
+  Sparkles,
   TerminalSquare,
   Wrench,
   X,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { links, site } from '../data/portfolio'
+import type { BackgroundMode } from '../hooks/useBackgroundMode'
 
 type CommandPaletteProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSelectBackground: (mode: BackgroundMode) => void
 }
 
 type Command = {
@@ -29,11 +32,10 @@ type Command = {
 
 function scrollToId(id: string) {
   const target = document.getElementById(id)
-  if (target) target.scrollIntoView({ block: 'start' })
-  else window.location.assign('/#' + id)
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, onSelectBackground }: CommandPaletteProps) {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
   const [debouncedQuery, setDebouncedQuery] = useState('')
@@ -113,15 +115,31 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         run: () => window.open(site.resume, '_blank', 'noopener,noreferrer'),
       },
       {
-        id: 'experience',
-        label: 'View VSPH Global internship',
-        hint: 'Experience',
-        keywords: 'experience work VSPH internship',
-        Icon: BriefcaseBusiness,
-        run: () => scrollToId('experience'),
+        id: 'aurora',
+        label: 'Background: Aurora',
+        hint: 'Atmosphere',
+        keywords: 'background aurora glow ambient theme',
+        Icon: Sparkles,
+        run: () => onSelectBackground('aurora'),
+      },
+      {
+        id: 'blueprint',
+        label: 'Background: Blueprint',
+        hint: 'Atmosphere',
+        keywords: 'background blueprint grid engineering ambient',
+        Icon: Sparkles,
+        run: () => onSelectBackground('blueprint'),
+      },
+      {
+        id: 'quiet',
+        label: 'Background: Quiet',
+        hint: 'Atmosphere',
+        keywords: 'background quiet minimal calm ambient',
+        Icon: Sparkles,
+        run: () => onSelectBackground('quiet'),
       },
     ],
-    [],
+    [onSelectBackground],
   )
 
   useEffect(() => {
