@@ -7,10 +7,10 @@
 export const site = {
   name: 'Ayan Khan',
   initials: 'AK',
-  headline: 'Software Developer Building Systems, Developer Tools & Applied AI',
+  headline: 'I build full-stack applications and tools for developers.',
   tagline: 'C++ · Python · TypeScript · Systems · Applied AI',
   intro:
-    'I build developer tools, data-intensive systems, full-stack products, and applied-AI experiments with an emphasis on deterministic behavior, explainability, testing, and public proof of work.',
+    'Recent work includes campus scheduling at DDUGU, operations software at VSPH, and cross-platform tests for Python tooling.',
   availability:
     'Open to internships, open-source collaboration, research-minded engineering teams, and ambitious technical projects.',
   location: 'India',
@@ -27,9 +27,9 @@ export const links = {
 
 export const about = {
   paragraphs: [
-    'I’m a second-year BCA student at Deen Dayal Upadhyaya Gorakhpur University, specializing in Machine Learning and Data Science. I learn best by building systems, testing assumptions, and turning vague ideas into something that can be inspected and challenged.',
-    'My recent work spans C++ developer tooling, graph-based fraud analysis, reproducible multi-agent LLM experimentation, browser-native WebMCP automation, clinical decision-support prototypes, and heat-response optimization. I care less about making a demo look intelligent than making the underlying system explainable, testable, and honest about its boundaries.',
-    'I also contribute upstream when I can, including fixes and regression coverage in projects such as CLI11, Manim, and OpenTrace. A growing part of how I work is public: issues, pull requests, design docs, tests, benchmarks, and write-ups that make the reasoning behind the code visible.',
+    'I’m a second-year BCA student at Deen Dayal Upadhyaya Gorakhpur University, specializing in Machine Learning and Data Science. At VSPH, I worked on the frontend for an internal operations platform, including employee onboarding, project milestones, and role-based access.',
+    'On campus, my team std::zero built IET Grid. We connected classroom floor plans to the timetable so students could find a room and faculty could request it for a class.',
+    'I also contribute to open-source developer tools. Recently I traced 18 failing Windows tests in the Runtime Conditions Python profiler to assumptions about text encoding and file paths.',
   ],
   atAGlance: [
     { label: 'Expected graduation', value: '2028' },
@@ -40,6 +40,7 @@ export const about = {
 }
 
 export type ProjectVisual =
+  | 'campus-map'
   | 'test-impact'
   | 'webmcp'
   | 'fraud-graph'
@@ -61,6 +62,20 @@ export type Project = {
 }
 
 export const projects: Project[] = [
+  {
+    title: 'IET Grid',
+    status: 'Team hackathon project · November 2026',
+    visual: 'campus-map',
+    problem: 'Finding an available classroom at DDUGU meant knowing both the building layout and the timetable.',
+    description: 'With team std::zero, I built a campus scheduling app that connects rooms on the IET and Deeksha floor plans to their class schedules.',
+    highlights: [
+      'Students can check room availability by building and floor.',
+      'Faculty can request rooms, and administrators can review bookings and publish schedules.',
+    ],
+    technologies: ['React', 'TypeScript', 'FastAPI', 'Supabase', 'PostgreSQL'],
+    githubUrl: 'https://github.com/ThunderKhan/iet-grid',
+    liveUrl: 'https://iet-grid.vercel.app/',
+  },
   {
     title: 'diff2test',
     status: 'Completed · C++20 CLI',
@@ -184,6 +199,27 @@ export type TimelineEntry = {
 }
 
 export const openSource: TimelineEntry[] = [
+  {
+    title: 'Connecting the VSPH Operations frontend',
+    period: 'November 2026',
+    category: 'Project workflow',
+    status: 'ongoing',
+    description: 'Integrated employee, HR, customer, and finance workflows into the existing project workspace. The frontend changes also cover account sessions, permissions, and notifications.',
+    links: [
+      { label: 'Operations integration', url: 'https://github.com/vsph-global/app-vsph-frontend/pull/11' },
+      { label: 'Projects and milestones', url: 'https://github.com/vsph-global/app-vsph-frontend/pull/10' },
+    ],
+  },
+  {
+    title: 'Getting the Python profiler test suite passing on Windows',
+    period: 'November 2026',
+    category: 'Open-source contribution',
+    status: 'completed',
+    description: 'Fixed text encoding in generated Python fixtures and normalized path separators in error-message assertions. On Windows 11 with Python 3.12, all 119 tests passed after the change.',
+    links: [
+      { label: 'Merged profiler fix', url: 'https://github.com/runtimeconditions/python-rc-profiler/pull/9' },
+    ],
+  },
   {
     title: 'Building webclerk around browser-native WebMCP semantics',
     period: 'September 2026',
@@ -339,6 +375,8 @@ export const skillGroups: SkillGroup[] = [
       'Pydantic',
       'SQLite',
       'MongoDB',
+      'PostgreSQL',
+      'Supabase',
     ],
   },
   {
@@ -363,6 +401,7 @@ export const skillGroups: SkillGroup[] = [
       'GitHub',
       'Linux',
       'Automated testing',
+      'Playwright',
       'CI/CD',
       'Debugging',
       'Failure handling',
@@ -411,7 +450,10 @@ export const education: Education[] = [
       'Databases',
       'Machine Learning Fundamentals',
     ],
-    certifications: ['NASA ARSET — Fundamentals of Remote Sensing'],
+    certifications: [
+      'DeepLearning.AI and Stanford Online — Supervised Machine Learning: Regression and Classification',
+      'NASA ARSET — Fundamentals of Remote Sensing',
+    ],
     activities: ['Open Source Connect India 2026 contributor'],
     achievements: ['Current SGPA: 9.08/10.00'],
   },

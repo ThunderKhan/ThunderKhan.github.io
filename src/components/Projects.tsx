@@ -187,9 +187,9 @@ export function Projects() {
   return (
     <Section
       id="projects"
-      eyebrow="Selected engineering work"
-      title="Systems worth opening up."
-      intro="A smaller set of projects that best represent how I currently build: define the boundary, make the behavior inspectable, test the uncomfortable cases, and document what the system can and cannot claim."
+      eyebrow="Portfolio"
+      title="Selected projects"
+      intro="Explore the campus scheduling app, developer tools, and machine learning projects I’ve worked on."
       wide
     >
       <Reveal>
